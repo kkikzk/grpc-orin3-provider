@@ -6,8 +6,8 @@ source "https://rubygems.org"
 gemspec
 
 gem "rake", "~> 13.0"
-gem 'google-protobuf'
-gem "grpc"
+gem 'google-protobuf', '~> 3.24'
+gem "grpc", '~> 1.67'
 
 group :test do
   gem 'minitest'
