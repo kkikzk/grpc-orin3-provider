@@ -8,6 +8,7 @@ gemspec
 gem "rake", "~> 13.0"
 gem 'google-protobuf', '~> 3.24'
 gem "grpc", '~> 1.67'
+gem 'grpc-tools'
 
 group :test do
   gem 'minitest'
