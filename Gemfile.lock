@@ -36,6 +36,8 @@ GEM
       google-protobuf (>= 3.25, < 5.0)
       googleapis-common-protos-types (~> 1.0)
     minitest (5.25.1)
+    minitest-hooks (1.5.2)
+      minitest (> 5.3)
     minitest-reporters (1.7.1)
       ansi
       builder
@@ -57,6 +59,7 @@ DEPENDENCIES
   grpc (~> 1.67)
   grpc-orin3-provider!
   minitest
+  minitest-hooks
   minitest-reporters
   rake (~> 13.0)
 

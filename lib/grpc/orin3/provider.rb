@@ -1,4 +1,8 @@
 require_relative "provider/version"
+require_relative "provider/date_time_converter"
+require_relative "provider/orin3_object_type"
+require_relative "provider/orin3_value_type"
+require_relative "../client/orin3/provider/orin3_base_object"
 require_relative '../../../gen/Message.ORiN3.Common/V1/orin3common_pb'
 require_relative '../../../gen/Message.ORiN3.Provider/V1/orin3baseobject_pb'
 require_relative '../../../gen/Message.ORiN3.Provider/V1/orin3baseobject_services_pb'
@@ -25,80 +29,125 @@ require_relative '../../../gen/Message.ORiN3.Provider/V1/orin3stream_services_pb
 require_relative '../../../gen/Message.ORiN3.Provider/V1/orin3variable_pb'
 require_relative '../../../gen/Message.ORiN3.Provider/V1/orin3variable_services_pb'
 
-module ORiN3ValueType
-  ORiN3Bool = 10
-  ORiN3BoolArray = 11
-  ORiN3NullableBool = 12
-  ORiN3NullableBoolArray = 13
-
-  ORiN3Int8 = 20
-  ORiN3Int8Array = 21
-  ORiN3NullableInt8 = 22
-  ORiN3NullableInt8Array = 23
-
-  ORiN3Int16 = 30
-  ORiN3Int16Array = 31
-  ORiN3NullableInt16 = 32
-  ORiN3NullableInt16Array = 33
-
-  ORiN3Int32 = 40
-  ORiN3Int32Array = 41
-  ORiN3NullableInt32 = 42
-  ORiN3NullableInt32Array = 43
-
-  ORiN3Int64 = 50
-  ORiN3Int64Array = 51
-  ORiN3NullableInt64 = 52
-  ORiN3NullableInt64Array = 53
-
-  ORiN3UInt8 = 60
-  ORiN3UInt8Array = 61
-  ORiN3NullableUInt8 = 62
-  ORiN3NullableUInt8Array = 63
-
-  ORiN3UInt16 = 70
-  ORiN3UInt16Array = 71
-  ORiN3NullableUInt16 = 72
-  ORiN3NullableUInt16Array = 73
-
-  ORiN3UInt32 = 80
-  ORiN3UInt32Array = 81
-  ORiN3NullableUInt32 = 82
-  ORiN3NullableUInt32Array = 83
-
-  ORiN3UInt64 = 90
-  ORiN3UInt64Array = 91
-  ORiN3NullableUInt64 = 92
-  ORiN3NullableUInt64Array = 93
-
-  ORiN3Float = 100
-  ORiN3FloatArray = 101
-  ORiN3NullableFloat = 102
-  ORiN3NullableFloatArray = 103
-
-  ORiN3Double = 110
-  ORiN3DoubleArray = 111
-  ORiN3NullableDouble = 112
-  ORiN3NullableDoubleArray = 113
-
-  ORiN3String = 120
-  ORiN3StringArray = 121
-
-  ORiN3DateTime = 130
-  ORiN3DateTimeArray = 131
-  ORiN3NullableDateTime = 132
-  ORiN3NullableDateTimeArray = 133
-
-  ORiN3Object = 140
+module TypeSwitcher
+  def self.execute(type, branch)
+    case type
+    when ORiN3ValueType::ORiN3Bool
+      branch.case_of_bool
+    when ORiN3ValueType::ORiN3BoolArray
+      branch.case_of_bool_array
+    when ORiN3ValueType::ORiN3NullableBool
+      branch.case_of_nullable_bool
+    when ORiN3ValueType::ORiN3NullableBoolArray
+      branch.case_of_nullable_bool_array
+    when ORiN3ValueType::ORiN3Int8
+      branch.case_of_int8
+    when ORiN3ValueType::ORiN3Int8Array
+      branch.case_of_int8_array
+    when ORiN3ValueType::ORiN3NullableInt8
+      branch.case_of_nullable_int8
+    when ORiN3ValueType::ORiN3NullableInt8Array
+      branch.case_of_nullable_int8_array
+    when ORiN3ValueType::ORiN3Int16
+      branch.case_of_int16
+    when ORiN3ValueType::ORiN3Int16Array
+      branch.case_of_int16_array
+    when ORiN3ValueType::ORiN3NullableInt16
+      branch.case_of_nullable_int16
+    when ORiN3ValueType::ORiN3NullableInt16Array
+      branch.case_of_nullable_int16_array
+    when ORiN3ValueType::ORiN3Int32
+      branch.case_of_int32
+    when ORiN3ValueType::ORiN3Int32Array
+      branch.case_of_int32_array
+    when ORiN3ValueType::RiN3NullableInt32
+      branch.case_of_nullable_int32
+    when ORiN3ValueType::ORiN3NullableInt32Array
+      branch.case_of_nullable_int32_array
+    when ORiN3ValueType::ORiN3Int64
+      branch.case_of_int64
+    when ORiN3ValueType::ORiN3Int64Array
+      branch.case_of_int64_array
+    when ORiN3ValueType::ORiN3NullableInt64
+      branch.case_of_nullable_int64
+    when ORiN3ValueType::ORiN3NullableInt64Array
+      branch.case_of_nullable_int64_array
+    when ORiN3ValueType::ORiN3UInt8
+      branch.case_of_uint8
+    when ORiN3ValueType::ORiN3UInt8Array
+      branch.case_of_uint8_array
+    when ORiN3ValueType::ORiN3NullableUInt8
+      branch.case_of_nullable_uint8
+    when ORiN3ValueType::ORiN3NullableUInt8Array
+      branch.case_of_nullable_uint8_array
+    when ORiN3ValueType::ORiN3UInt16
+      baanch.case_of_uint16
+    when ORiN3ValueType::ORiN3UInt16Array
+      branch.case_of_uint16_array
+    when ORiN3ValueType::ORiN3NullableUInt16
+      branch.case_of_nullable_uint16
+    when ORiN3ValueType::ORiN3NullableUInt16Array
+      branch.case_of_nullable_uint16_array    
+    when ORiN3ValueType::ORiN3UInt32
+      branch.case_of_uint32
+    when ORiN3ValueType::ORiN3UInt32Array
+      branch.case_of_uint32_array
+    when ORiN3ValueType::ORiN3NullableUInt32
+      branch.case_of_nullable_uint32
+    when ORiN3ValueType::ORiN3NullableUInt32Array
+      branch.case_of_nullable_uint32_array
+    when ORiN3ValueType::ORiN3UInt64
+      branch.case_of_uint64
+    when ORiN3ValueType::ORiN3UInt64Array
+      branch.case_of_uint64_array
+    when ORiN3ValueType::ORiN3NullableUInt64
+      branch.case_of_nullable_uint64
+    when ORiN3ValueType::ORiN3NullableUInt64Array
+      branch.case_of_nullable_uint64_array
+    when ORiN3ValueType::ORiN3Float
+      branch.case_of_float
+    when ORiN3ValueType::ORiN3FloatArray
+      branch.case_of_float_array
+    when ORiN3ValueType::ORiN3NullableFloat
+      branch.case_of_nullable_float
+    when ORiN3ValueType::ORiN3NullableFloatArray
+      branch.case_of_nullable_float_array
+    when ORiN3ValueType::ORiN3Double
+      branch.case_of_double
+    when ORiN3ValueType::ORiN3DoubleArray
+      baanch.case_of_double_array
+    when ORiN3ValueType::ORiN3NullableDouble
+      branch.case_of_nullable_double
+    when ORiN3ValueType::ORiN3NullableDoubleArray
+      branch.case_of_nullable_double_array
+    when ORiN3ValueType::ORiN3String
+      branch.case_of_string
+    when ORiN3ValueType::ORiN3StringArray
+      branch.case_of_string_array
+    when ORiN3ValueType::ORiN3DateTime
+      branch.case_of_datetime
+    when ORiN3ValueType::ORiN3DateTimeArray
+      branch.case_of_datetime_array
+    when ORiN3ValueType::ORiN3NullableDateTime
+      branch.case_of_nullable_datetime
+    when ORiN3ValueType::ORiN3NullableDateTimeArray
+      branch.case_of_nullable_datetime_array
+    when ORiN3ValueType::ORiN3Object
+      branch.case_of_object
+    else
+      branch.case_of_error
+    end
+  rescue => e
+    raise TypeSwitcherException.new(type, e)
+  end
 end
 
-module ORiN3ObjectType
-  ProviderRoot = 0
-  Controller = 1
-  Module = 2
-  Variable = 3
-  File = 4
-  Stream = 5
-  Event = 6
-  Job = 7
+class TypeSwitcherException < StandardError
+  attr_reader :type
+
+  def initialize(type, original_error)
+    @type = type
+    super("Error processing type #{type}: #{original_error.message}")
+    set_backtrace(original_error.backtrace)
+  end
 end

@@ -12,4 +12,5 @@ gem "grpc", '~> 1.67'
 group :test do
   gem 'minitest'
   gem 'minitest-reporters'
+  gem 'minitest-hooks'
 end
