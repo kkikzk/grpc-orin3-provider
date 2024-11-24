@@ -195,6 +195,10 @@ class ORiN3ProviderTest < Minitest::Test
     tag_test_without_type(root, [ 9_223_372_036_854_775_807, nil, -9_223_372_036_854_775_808 ])
     tag_test_without_type(root, "あいうえお")
 
+    controller = root.create_controller("GeneralPurposeController",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Controller.GeneralPurposeController, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }")
+    $logger.info "Controller name: #{controller.name}"
 
     root.set_tag("Bool1", true, ORiN3BinaryConverter::DataType::Bool)
     root.set_tag("Bool2", false, ORiN3BinaryConverter::DataType::Bool)
