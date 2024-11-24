@@ -4,16 +4,17 @@ module Grpc
       class MessageClientError < StandardError
         attr_reader :result_code, :detail
   
-        def initialize(result_code, detail)
-          @result_code = result_code
-          @detail = detail
-          super(detail)
-        end
-
-        def initialize(standard_error)
-          @result_code = :UNKNOUN
-          @detail = standard_error.message
-          super(detail)
+        def initialize(arg1, arg2 = nil)
+          if arg2.nil? && arg1.is_a?(StandardError)
+            @result_code = :UNKNOWN
+            @detail = arg1.message
+            super("Code: #{@result_code}, Detail: #{@detail}")
+            set_backtrace(arg1.backtrace)
+          else
+            @result_code = arg1
+            @detail = arg2
+            super("Code: #{@result_code}, Detail: #{@detail}")
+          end
         end
       end
     end
