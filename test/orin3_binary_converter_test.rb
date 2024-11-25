@@ -266,6 +266,20 @@ class ORiN3ProviderTest < Minitest::Test
 
   def test_float
     $logger.info "* test_float called."
+
+    # Single: NaN
+    # 255, 192, 0, 0
+    # Single: ∞
+    # 127, 128, 0, 0
+    # Single: -∞
+    # 255, 128, 0, 0
+    # Single: 0
+    # 0, 0, 0, 0
+    # Single: 1
+    # 63, 128, 0, 0
+    # do_test(-3.4028235E+38, [ 38, 255, 127, 255, 255 ], ORiN3BinaryConverter::DataType::Float)
+    # (3.4028235E+38, [ 38, 127, 127, 255, 255 ], ORiN3BinaryConverter::DataType::Float)
+
     do_test(0, [ 38, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::Float)
     do_test(1, [ 38, 0, 0, 0x80, 0x3F ], ORiN3BinaryConverter::DataType::Float)
   end
@@ -283,6 +297,22 @@ class ORiN3ProviderTest < Minitest::Test
 
   def test_double
     $logger.info "* test_double called."
+
+    # Double: -1.7976931348623157E+308
+    # 255, 239, 255, 255, 255, 255, 255, 255
+    # Double: 1.7976931348623157E+308
+    # 127, 239, 255, 255, 255, 255, 255, 255
+    # Double: NaN
+    # 255, 248, 0, 0, 0, 0, 0, 0
+    # Double: ∞
+    # 127, 240, 0, 0, 0, 0, 0, 0
+    # Double: -∞
+    # 255, 240, 0, 0, 0, 0, 0, 0
+    # Double: 0
+    # 0, 0, 0, 0, 0, 0, 0, 0
+    # Double: 1
+    # 63, 240, 0, 0, 0, 0, 0, 0
+
     do_test(0, [ 42, 0, 0, 0, 0, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::Double)
   end
 
@@ -298,6 +328,13 @@ class ORiN3ProviderTest < Minitest::Test
   end
 
 #   def test_datetime
+# DateTime.MinValue: 0
+# 0, 0, 0, 0, 0, 0, 0, 0
+# DateTime.MaxValue: 3155378975999999999
+# 43, 202, 40, 117, 244, 55, 63, 255
+# 2024-11-25T22:34:48.2860742Z
+# DateTime: 5250367727310248646
+# 72, 221, 13, 161, 94, 128, 154, 198
 #     $logger.info "* test_datetime called."
 #     do_test(Time.new(2024, 11, 24, 11, 24, 36), [ 172, 114, 136, 34, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::DateTime)
 #   end
