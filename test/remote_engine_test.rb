@@ -110,7 +110,7 @@ class RemoteEngineTest < Minitest::Test
 
   def test_get_status
     # arrange
-    $logger.info "* test_shutdown called."
+    $logger.info "* test_get_status called."
     @remote_engine_mock_server.response_values[:result_code] = :SUCCEEDED
     @remote_engine_mock_server.response_values[:detail] = "hoge"
     @remote_engine_mock_server.response_values[:status] = 1

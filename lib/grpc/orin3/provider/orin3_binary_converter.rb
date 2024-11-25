@@ -430,44 +430,11 @@ class ORiN3BinaryConverter
       byte_array[5..] = string_bytes
       return byte_array.pack('C*')
     when ORiN3BinaryConverter::DataType::DateTime
-      epoch = DateTime.new(1, 1, 1)
-      years = data.year - epoch.year
-      months = data.month - epoch.month
-      days = data.day - epoch.day
-      hours = data.hour
-      minutes = data.minute
-      seconds = data.second
-      milliseconds = data.strftime("%L").to_i  # ミリ秒
-      microseconds = (data.strftime("%6N") || '000000').to_i  # マイクロ秒
-      nanoseconds = (data.strftime("%9N") || '000000000').to_i  # ナノ秒
-      
-      ticks_per_year = 365 * 86400 * 10**7  # 1年は365日で計算
-      ticks_per_month = 30 * 86400 * 10**7  # 1ヶ月を30日として計算
-      ticks_per_day = 86400 * 10**7  # 1日は86400秒
-      ticks_per_hour = 3600 * 10**7  # 1時間は3600秒
-      ticks_per_minute = 60 * 10**7  # 1分は60秒
-      ticks_per_second = 10**7  # 1秒は100ナノ秒
-      
-      # 基本的な部分を100ナノ秒単位に変換して合計
-      ticks = 0
-      ticks += years * ticks_per_year
-      ticks += months * ticks_per_month
-      ticks += days * ticks_per_day
-      ticks += hours * ticks_per_hour
-      ticks += minutes * ticks_per_minute
-      ticks += seconds * ticks_per_second
-      
-      # ミリ秒、マイクロ秒、ナノ秒をそれぞれ100ナノ秒単位に変換
-      ticks += milliseconds * 10**4  # ミリ秒から100ナノ秒単位
-      ticks += microseconds * 10  # マイクロ秒から100ナノ秒単位
-      ticks += nanoseconds  # ナノ秒から100ナノ秒単位
-      
-      puts ticks
+      ticks = Grpc::ORiN3::Provider::DateTimeConverter.to_int64(data)
       byte_array = Array.new(9, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::DateTime
       byte_array[1..8] = [ticks].pack('q<').bytes
       return byte_array.pack('C*')
-
     when ORiN3BinaryConverter::DataType::BoolArray
       byte_array = Array.new(1 + 4 + data.length, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::BoolArray
@@ -481,6 +448,9 @@ class ORiN3BinaryConverter
       byte_array[0] = ORiN3BinaryConverter::DataType::UInt8Array
       byte_array[1..4] = [data.length].pack('L<').bytes
       data.each_with_index do |item, index|
+        if (!item.nil? && (item < 0 || item > 255))
+          raise ArgumentError, "Value #{item} is out of range for UInt8. It must be between 0 and 255."
+        end
         byte_array[5 + index] = item
       end
       return byte_array.pack('C*')
@@ -489,6 +459,9 @@ class ORiN3BinaryConverter
       byte_array[0] = ORiN3BinaryConverter::DataType::Int8Array
       byte_array[1..4] = [data.length].pack('L<').bytes
       data.each_with_index do |item, index|
+        if item < -128 || 127 < item
+          raise ArgumentError, "Value #{item} is out of range for Int8. It must be between -128 and 127."
+        end
         byte_array[5 + index] = item
       end
       return byte_array.pack('C*')
@@ -497,6 +470,9 @@ class ORiN3BinaryConverter
       byte_array[0] = ORiN3BinaryConverter::DataType::UInt16Array
       byte_array[1..4] = [data.length].pack('L<').bytes
       data.each_with_index do |item, index|
+        if item < 0 || item > 65535
+          raise ArgumentError, "Value #{item} is out of range for UInt16. It must be between 0 and 65535."
+        end
         byte_array[5 + index * 2, 2] = [item].pack('S<').bytes
       end
       return byte_array.pack('C*')
@@ -505,6 +481,9 @@ class ORiN3BinaryConverter
       byte_array[0] = ORiN3BinaryConverter::DataType::Int16Array
       byte_array[1..4] = [data.length].pack('L<').bytes
       data.each_with_index do |item, index|
+        if item < -32768 || item > 32767
+          raise ArgumentError, "Value #{item} is out of range for Int16. It must be between -32768 and 32767."
+        end
         byte_array[5 + index * 2, 2] = [item].pack('s<').bytes
       end
       return byte_array.pack('C*')
@@ -513,6 +492,9 @@ class ORiN3BinaryConverter
       byte_array[0] = ORiN3BinaryConverter::DataType::UInt32Array
       byte_array[1..4] = [data.length].pack('L<').bytes
       data.each_with_index do |item, index|
+        if item < 0 || item > 4294967295
+          raise ArgumentError, "Value #{item} is out of range for UInt32. It must be between 0 and 4294967295."
+        end
         byte_array[5 + index * 4, 4] = [item].pack('L<').bytes
       end
       return byte_array.pack('C*')
@@ -521,6 +503,9 @@ class ORiN3BinaryConverter
       byte_array[0] = ORiN3BinaryConverter::DataType::Int32Array
       byte_array[1..4] = [data.length].pack('L<').bytes
       data.each_with_index do |item, index|
+        if item < -2147483648 || item > 2147483647
+          raise ArgumentError, "Value #{item} is out of range for Int32. It must be between -2147483648 and 2147483647."
+        end
         byte_array[5 + index * 4, 4] = [item].pack('l<').bytes
       end
       return byte_array.pack('C*')
@@ -529,6 +514,9 @@ class ORiN3BinaryConverter
       byte_array[0] = ORiN3BinaryConverter::DataType::UInt64Array
       byte_array[1..4] = [data.length].pack('L<').bytes
       data.each_with_index do |item, index|
+        if !item.nil? && (item < 0 || item > 18_446_744_073_709_551_615)
+          raise ArgumentError, "Value #{item} is out of range for UInt64. It must be between 0 and 18446744073709551615."
+        end
         byte_array[5 + index * 8, 8] = [item].pack('Q<').bytes
       end
       return byte_array.pack('C*')
@@ -537,6 +525,9 @@ class ORiN3BinaryConverter
       byte_array[0] = ORiN3BinaryConverter::DataType::Int64Array
       byte_array[1..4] = [data.length].pack('L<').bytes
       data.each_with_index do |item, index|
+        if item < -9223372036854775808 || item > 9223372036854775807
+          raise ArgumentError, "Value #{item} is out of range for Int64. It must be between -9223372036854775808 and 9223372036854775807."
+        end
         byte_array[5 + index * 8, 8] = [item].pack('q<').bytes
       end
       return byte_array.pack('C*')
