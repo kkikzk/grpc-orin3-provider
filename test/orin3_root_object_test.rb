@@ -94,6 +94,37 @@ class ORiN3ProviderTest < Minitest::Test
     assert_equal 0, root.get_tag_keys.length
   end
 
+  def test_2
+    $logger.info "* test_2 called."
+
+    # act
+    id = "643D12C8-DCFC-476C-AA15-E8CA004F48E8"
+    version = "1.0.84-beta.8"
+    channel = GRPC::Core::Channel.new("localhost:7103", nil, :this_channel_is_insecure)
+    remote_engine = ORiN3::RemoteEngine.new(channel)
+    result = remote_engine.wakeup_provider(id, version, "0.0.0.0", 0)
+    $logger.info "result.idの内容 (16進数): #{result.id.unpack('H*').first}"
+    # ASCIIエンコードされた文字列をデコード
+    guid = result.id.force_encoding('ASCII-8BIT').force_encoding('UTF-8')
+    $logger.info "GUID文字列: #{guid}"
+    $logger.info "Uri: #{result.provider_information.endpoints[0].uri}"
+
+    uri = URI.parse(result.provider_information.endpoints[0].uri)
+    provider_channerl = GRPC::Core::Channel.new("#{uri.host}:#{uri.port}", nil, :this_channel_is_insecure)
+    root = ORiN3::ORiN3RootObject.attach(provider_channerl)
+    root.set_tag("tag", Float::MAX, ORiN3BinaryConverter::DataType::Double)
+  end
+
+  def test_3
+    $logger.info "* test_3 called."
+
+    provider_channerl = GRPC::Core::Channel.new("localhost:51233", nil, :this_channel_is_insecure)
+    root = ORiN3::ORiN3RootObject.attach(provider_channerl)
+    root.set_tag("tag float min", -3.4028235E+38, ORiN3BinaryConverter::DataType::Float)
+    tag = root.get_tag("tag float min")
+    $logger.info tag
+  end
+
   def test_
     $logger.info "* test_ called."
 

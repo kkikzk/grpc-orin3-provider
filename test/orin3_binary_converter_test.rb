@@ -37,7 +37,7 @@ class ORiN3ProviderTest < Minitest::Test
   def do_test(data, binary, type)
     binary = binary.pack('C*')
     actual = ORiN3BinaryConverter.serialize(data, type)
-    $logger.info "data: #{data} => #{actual.inspect}"
+    $logger.info "data: #{data} => #{actual.unpack("C*").map { |byte| "%02x" % byte }.join}"
     assert_equal binary, actual
     actual = ORiN3BinaryConverter.deserialize(binary)
     $logger.info "#{binary.inspect} => #{actual}[#{actual.class.name}]"
@@ -266,76 +266,85 @@ class ORiN3ProviderTest < Minitest::Test
 
   def test_float
     $logger.info "* test_float called."
-
-    # Single: NaN
-    # 255, 192, 0, 0
-    # Single: ∞
-    # 127, 128, 0, 0
-    # Single: -∞
-    # 255, 128, 0, 0
-    # Single: 0
-    # 0, 0, 0, 0
-    # Single: 1
-    # 63, 128, 0, 0
-    # do_test(-3.4028235E+38, [ 38, 255, 127, 255, 255 ], ORiN3BinaryConverter::DataType::Float)
-    # (3.4028235E+38, [ 38, 127, 127, 255, 255 ], ORiN3BinaryConverter::DataType::Float)
-
+    do_test(Float::INFINITY, [ 38, 0, 0, 128, 127 ], ORiN3BinaryConverter::DataType::Float)
+    do_test(-Float::INFINITY, [ 38, 0, 0, 128, 255 ], ORiN3BinaryConverter::DataType::Float)
     do_test(0, [ 38, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::Float)
     do_test(1, [ 38, 0, 0, 0x80, 0x3F ], ORiN3BinaryConverter::DataType::Float)
   end
 
   def test_float_array
     $logger.info "* test_float_array called."
-    do_test([ 0, 1 ], [ 39, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x80, 0x3F ], ORiN3BinaryConverter::DataType::FloatArray)
+    do_test([ Float::INFINITY, -Float::INFINITY, 0, 1 ], [ 39, 4, 0, 0, 0, 0, 0, 128, 127, 0, 0, 128, 255, 0, 0, 0, 0, 0, 0, 0x80, 0x3F ], ORiN3BinaryConverter::DataType::FloatArray)
   end
 
   def test_nullable_float_array
     $logger.info "* test_nullable_float_array called."
     do_test([ nil ], [ 41, 1, 0, 0, 0, 0, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::NullableFloatArray)
-    do_test([ 0, nil, 1 ], [ 41, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0x80, 0x3F ], ORiN3BinaryConverter::DataType::NullableFloatArray)
+    do_test([ Float::INFINITY, -Float::INFINITY, 0, nil, 1 ], [ 41, 5, 0, 0, 0, 1, 0, 0, 128, 127, 1, 0, 0, 128, 255, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0x80, 0x3F ], ORiN3BinaryConverter::DataType::NullableFloatArray)
   end
 
   def test_double
     $logger.info "* test_double called."
-
-    # Double: -1.7976931348623157E+308
-    # 255, 239, 255, 255, 255, 255, 255, 255
-    # Double: 1.7976931348623157E+308
-    # 127, 239, 255, 255, 255, 255, 255, 255
-    # Double: NaN
-    # 255, 248, 0, 0, 0, 0, 0, 0
-    # Double: ∞
-    # 127, 240, 0, 0, 0, 0, 0, 0
-    # Double: -∞
-    # 255, 240, 0, 0, 0, 0, 0, 0
-    # Double: 0
-    # 0, 0, 0, 0, 0, 0, 0, 0
-    # Double: 1
-    # 63, 240, 0, 0, 0, 0, 0, 0
-
+    do_test(-1.7976931348623157e+308, [42, 255, 255, 255, 255, 255, 255, 239, 255 ], ORiN3BinaryConverter::DataType::Double)
+    do_test(1.7976931348623157e+308, [42, 255, 255, 255, 255, 255, 255, 239, 127 ], ORiN3BinaryConverter::DataType::Double)
+    do_test(Float::INFINITY, [42, 0, 0, 0, 0, 0, 0, 240, 127 ], ORiN3BinaryConverter::DataType::Double)
+    do_test(-Float::INFINITY, [42, 0, 0, 0, 0, 0, 0, 240, 255 ], ORiN3BinaryConverter::DataType::Double)
+    do_test(1, [42, 0, 0, 0, 0, 0, 0, 240, 63 ], ORiN3BinaryConverter::DataType::Double)
     do_test(0, [ 42, 0, 0, 0, 0, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::Double)
   end
 
   def test_double_array
     $logger.info "* test_double_array called."
-    do_test([ 0 ], [ 43, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::DoubleArray)
+    do_test([ -1.7976931348623157e+308, 1.7976931348623157e+308, Float::INFINITY, -Float::INFINITY, 1.0, 0.0 ], [
+      43, 6, 0, 0, 0,
+      255, 255, 255, 255, 255, 255, 239, 255,
+      255, 255, 255, 255, 255, 255, 239, 127,
+      0, 0, 0, 0, 0, 0, 240, 127,
+      0, 0, 0, 0, 0, 0, 240, 255,
+      0, 0, 0, 0, 0, 0, 240, 63,
+      0, 0, 0, 0, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::DoubleArray)
   end
 
   def test_nullable_double_array
     $logger.info "* test_nullable_double_array called."
     do_test([ nil ], [ 45, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::NullableDoubleArray)
-    do_test([ 0, nil ], [ 45, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::NullableDoubleArray)
+
+    do_test([ -1.7976931348623157e+308, 1.7976931348623157e+308, Float::INFINITY, -Float::INFINITY, 1.0, nil, 0.0 ], [
+      45, 7, 0, 0, 0,
+      1, 255, 255, 255, 255, 255, 255, 239, 255,
+      1, 255, 255, 255, 255, 255, 255, 239, 127,
+      1, 0, 0, 0, 0, 0, 0, 240, 127,
+      1, 0, 0, 0, 0, 0, 0, 240, 255,
+      1, 0, 0, 0, 0, 0, 0, 240, 63,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      1, 0, 0, 0, 0, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::NullableDoubleArray)
   end
 
-#   def test_datetime
-# DateTime.MinValue: 0
-# 0, 0, 0, 0, 0, 0, 0, 0
-# DateTime.MaxValue: 3155378975999999999
-# 43, 202, 40, 117, 244, 55, 63, 255
-# 2024-11-25T22:34:48.2860742Z
-# DateTime: 5250367727310248646
-# 72, 221, 13, 161, 94, 128, 154, 198
-#     $logger.info "* test_datetime called."
-#     do_test(Time.new(2024, 11, 24, 11, 24, 36), [ 172, 114, 136, 34, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::DateTime)
-#   end
+  def test_datetime
+    $logger.info "* test_datetime called."
+    do_test(Time.iso8601("0001-01-01T00:00:00.0000000Z"), [ 48, 0, 0, 0, 0, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::DateTime)
+    do_test(Time.iso8601("2024-11-27T09:00:00.0000000Z"), [ 48, 0, 168, 163, 223, 193, 14, 221, 8 ], ORiN3BinaryConverter::DataType::DateTime)
+  end
+
+  def test_datetime_array
+    $logger.info "* test_datetime_array called."
+    do_test([ Time.iso8601("0001-01-01T00:00:00.0000000Z"), Time.iso8601("2024-11-27T09:00:00.0000000Z") ], [
+      49, 2, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 168, 163, 223, 193, 14, 221, 8 ], ORiN3BinaryConverter::DataType::DateTimeArray)
+  end
+
+  def test_nullable_datetime_array
+    $logger.info "* test_nullable_datetime_array called."
+    do_test([ Time.iso8601("0001-01-01T00:00:00.0000000Z"), nil, Time.iso8601("2024-11-27T09:00:00.0000000Z") ], [
+      51, 3, 0, 0, 0,
+      1, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      1, 0, 168, 163, 223, 193, 14, 221, 8 ], ORiN3BinaryConverter::DataType::NullableDateTimeArray)
+  end
+
+  def test_string
+    $logger.info "* test_datetime called."
+    do_test("0", [ 46, 1, 0, 0, 0, 0x30 ], ORiN3BinaryConverter::DataType::String)
+  end
 end

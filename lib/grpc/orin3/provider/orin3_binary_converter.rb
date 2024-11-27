@@ -132,7 +132,7 @@ class ORiN3BinaryConverter
       return string_data
     when ORiN3BinaryConverter::DataType::DateTime
       timestamp = binary_data[1..8].unpack('q<').first
-      return Time.at(timestamp).to_datetime
+      return Grpc::ORiN3::Provider::DateTimeConverter::from_int64(timestamp)
     when ORiN3BinaryConverter::DataType::BoolArray
       length = binary_data[1..4].unpack('L').first
       result = Array.new(length, nil)
@@ -216,6 +216,14 @@ class ORiN3BinaryConverter
       length.times do |i|
         string_length = binary_data[5 + i * 4, 4].unpack('L').first
         result[i] = binary_data[9 + i * 4, string_length].force_encoding('UTF-8')
+      end
+      return result
+    when ORiN3BinaryConverter::DataType::DateTimeArray
+      length = binary_data[1..4].unpack('L').first
+      result = Array.new(length, nil)
+      length.times do |i|
+        timestamp = binary_data[5 + i * 8, 8].unpack('q<').first
+        result[i] = Grpc::ORiN3::Provider::DateTimeConverter::from_int64(timestamp)
       end
       return result
     when ORiN3BinaryConverter::DataType::NullableBoolArray
@@ -327,6 +335,17 @@ class ORiN3BinaryConverter
         index = 5 + (i * 9)
         if binary_data[index].ord == 1
           result[i] = binary_data[index + 1, 8].unpack('E').first
+        end
+      end
+      return result
+    when ORiN3BinaryConverter::DataType::NullableDateTimeArray
+      length = binary_data[1..4].unpack('L').first
+      result = Array.new(length, nil)
+      length.times do |i|
+        index = 5 + (i * 9)
+        if binary_data[index].ord == 1
+          timestamp = binary_data[index + 1, 8].unpack('q<').first
+          result[i] = Grpc::ORiN3::Provider::DateTimeConverter::from_int64(timestamp)
         end
       end
       return result
@@ -568,6 +587,15 @@ class ORiN3BinaryConverter
         end
       end
       return byte_array.pack('C*')
+    when ORiN3BinaryConverter::DataType::DateTimeArray
+      byte_array = Array.new(1 + 4 + data.length * 8, 0)
+      byte_array[0] = ORiN3BinaryConverter::DataType::DateTimeArray
+      byte_array[1..4] = [data.length].pack('L<').bytes
+      data.each_with_index do |item, index|
+        ticks = Grpc::ORiN3::Provider::DateTimeConverter.to_int64(item)
+        byte_array[5 + index * 8, 8] = [ticks].pack('q<').bytes
+      end
+      return byte_array.pack('C*')
     when ORiN3BinaryConverter::DataType::NullableBoolArray
       byte_array = Array.new(1 + 4 + data.length, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::NullableBoolArray
@@ -711,6 +739,18 @@ class ORiN3BinaryConverter
         if !item.nil?
           byte_array[5 + (index * 9)] = 1
           byte_array[5 + (index * 9) + 1, 8] = [item].pack('E').bytes
+        end
+      end
+      return byte_array.pack('C*')
+    when ORiN3BinaryConverter::DataType::NullableDateTimeArray
+      byte_array = Array.new(1 + 4 + (data.length * 9), 0)
+      byte_array[0] = ORiN3BinaryConverter::DataType::NullableDateTimeArray
+      byte_array[1..4] = [data.length].pack('L<').bytes
+      data.each_with_index do |item, index|
+        if !item.nil?
+          byte_array[5 + (index * 9)] = 1
+          ticks = Grpc::ORiN3::Provider::DateTimeConverter.to_int64(item)
+          byte_array[5 + (index * 9) + 1, 8] = [ticks].pack('q<').bytes
         end
       end
       return byte_array.pack('C*')
