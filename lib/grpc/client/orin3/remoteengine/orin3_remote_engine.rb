@@ -81,9 +81,7 @@ module Grpc
 
         def wakeup_provider(id, version, host, port)
           begin
-            #service = O3::RemoteEngineService::Stub.new(nil, :this_channel_is_insecure, channel_override: @channel)
-            service = O3::RemoteEngineService::Stub.new("localhost:7103", :this_channel_is_insecure)
-
+            service = O3::RemoteEngineService::Stub.new(nil, :this_channel_is_insecure, channel_override: @channel)
             endpoint_info = create_provider_core_startup_argument_endpoint_info(0, host, port)
             telemetry_option = create_telemetry_option(true)
             argument = create_provider_core_startup_argument(false, [endpoint_info], 0, telemetry_option)
@@ -104,7 +102,7 @@ module Grpc
                 endpoint.protocol_type
               )
             end
-            return WakeupProviderResponse.new(id, ProviderInformation.new(endpoints))
+            return WakeupProviderResponse.new(response.id, ProviderInformation.new(endpoints))
           rescue MessageClientError
             raise
           rescue StandardError => e

@@ -94,37 +94,6 @@ class ORiN3ProviderTest < Minitest::Test
     assert_equal 0, root.get_tag_keys.length
   end
 
-  def test_2
-    $logger.info "* test_2 called."
-
-    # act
-    id = "643D12C8-DCFC-476C-AA15-E8CA004F48E8"
-    version = "1.0.84-beta.8"
-    channel = GRPC::Core::Channel.new("localhost:7103", nil, :this_channel_is_insecure)
-    remote_engine = ORiN3::RemoteEngine.new(channel)
-    result = remote_engine.wakeup_provider(id, version, "0.0.0.0", 0)
-    $logger.info "result.idの内容 (16進数): #{result.id.unpack('H*').first}"
-    # ASCIIエンコードされた文字列をデコード
-    guid = result.id.force_encoding('ASCII-8BIT').force_encoding('UTF-8')
-    $logger.info "GUID文字列: #{guid}"
-    $logger.info "Uri: #{result.provider_information.endpoints[0].uri}"
-
-    uri = URI.parse(result.provider_information.endpoints[0].uri)
-    provider_channerl = GRPC::Core::Channel.new("#{uri.host}:#{uri.port}", nil, :this_channel_is_insecure)
-    root = ORiN3::ORiN3RootObject.attach(provider_channerl)
-    root.set_tag("tag", Float::MAX, ORiN3BinaryConverter::DataType::Double)
-  end
-
-  def test_3
-    $logger.info "* test_3 called."
-
-    provider_channerl = GRPC::Core::Channel.new("localhost:51233", nil, :this_channel_is_insecure)
-    root = ORiN3::ORiN3RootObject.attach(provider_channerl)
-    root.set_tag("tag float min", -3.4028235E+38, ORiN3BinaryConverter::DataType::Float)
-    tag = root.get_tag("tag float min")
-    $logger.info tag
-  end
-
   def test_
     $logger.info "* test_ called."
 
@@ -138,10 +107,6 @@ class ORiN3ProviderTest < Minitest::Test
     $logger.info "result.idの型: #{result.id.class}"
     $logger.info "result.idのサイズ: #{result.id.bytesize} バイト"
     $logger.info "result.idの内容 (16進数): #{result.id.unpack('H*').first}"
-    # ASCIIエンコードされた文字列をデコード
-    guid = result.id.force_encoding('ASCII-8BIT').force_encoding('UTF-8')
-    $logger.info "GUID文字列: #{guid}"
-
     $logger.info "Uri: #{result.provider_information.endpoints[0].uri}"
     $logger.info "[#{result.provider_information.endpoints[0].index}] IP address: #{result.provider_information.endpoints[0].ip_address}:#{result.provider_information.endpoints[0].port}"
 
@@ -231,6 +196,266 @@ class ORiN3ProviderTest < Minitest::Test
       "{ \"@Version\":\"1.0.84-beta.8\" }")
     $logger.info "Controller name: #{controller.name}"
 
+    val = controller.create_variable("val",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.Int32Variable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_INT32)
+
+      
+    val.set_value(135)
+    $logger.info val.get_value().class.name
+    $logger.info val.get_value()
+    val.set_value(222)
+    $logger.info val.get_value().inspect
+
+    $logger.info "★★--------------------- bool"
+    val = controller.create_variable("bool",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.BoolVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_BOOL)
+      val.set_value(false)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+    val.set_value(true)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("boolarray",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.BoolArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":2 }", :ORIN3_BOOL_ARRAY)
+      val.set_value([ true, false ])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("nullablebool",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableBoolVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_NULLABLE_BOOL)
+      val.set_value(true)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+    val.set_value(false)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+    val.set_value(nil)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("nullableboolarray",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableBoolArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":3 }", :ORIN3_NULLABLE_BOOL_ARRAY)    
+    val.set_value([ false, nil, true ])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    $logger.info "★★--------------------- uint8"
+    val = controller.create_variable("UInt8Variable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.UInt8Variable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_UINT8)
+    val.set_value(255)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("UInt8ArrayVariable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.UInt8ArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":2 }", :ORIN3_UINT8_ARRAY)
+    val.set_value([0, 255])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("NullableUInt8Variable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableUInt8Variable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_NULLABLE_UINT8)
+    val.set_value(255)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+    val.set_value(nil)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value() || "nil"}"
+
+    val = controller.create_variable("NullableUInt8ArrayVariable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableUInt8ArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":3 }", :ORIN3_NULLABLE_UINT8_ARRAY)
+    val.set_value([ 0, nil, 255 ])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    $logger.info "★★--------------------- uint16"
+    val = controller.create_variable("UInt16Variable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.UInt16Variable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_UINT16)
+    val.set_value(65535)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("UInt16ArrayVariable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.UInt16ArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":2 }", :ORIN3_UINT16_ARRAY)
+    val.set_value([0, 65535])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("NullableUInt16Variable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableUInt16Variable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_NULLABLE_UINT16)
+    val.set_value(65535)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+    val.set_value(nil)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value() || "nil"}"
+
+    val = controller.create_variable("NullableUInt16ArrayVariable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableUInt16ArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":3 }", :ORIN3_NULLABLE_UINT16_ARRAY)
+    val.set_value([ 0, nil, 65535 ])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    $logger.info "★★--------------------- uint32"
+    val = controller.create_variable("UInt32Variable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.UInt32Variable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_UINT32)
+    val.set_value(4_294_967_295)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("UInt32ArrayVariable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.UInt32ArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":2 }", :ORIN3_UINT32_ARRAY)
+    val.set_value([0, 4_294_967_295])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("NullableUInt32Variable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableUInt32Variable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_NULLABLE_UINT32)
+    val.set_value(4_294_967_295)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+    val.set_value(nil)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value() || "nil"}"
+
+    val = controller.create_variable("NullableUInt32ArrayVariable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableUInt32ArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":3 }", :ORIN3_NULLABLE_UINT32_ARRAY)
+    val.set_value([ 0, nil, 4_294_967_295 ])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    $logger.info "★★--------------------- uint64"
+    val = controller.create_variable("UInt64Variable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.UInt64Variable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_UINT64)
+    val.set_value(18_446_744_073_709_551_615)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("UInt64ArrayVariable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.UInt64ArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":2 }", :ORIN3_UINT64_ARRAY)
+    val.set_value([0, 18_446_744_073_709_551_615])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("NullableUInt64Variable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableUInt64Variable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_NULLABLE_UINT64)
+    val.set_value(18_446_744_073_709_551_615)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+    val.set_value(nil)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value() || "nil"}"
+
+    val = controller.create_variable("NullableUInt64ArrayVariable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableUInt64ArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":3 }", :ORIN3_NULLABLE_UINT64_ARRAY)
+    val.set_value([ 0, nil, 18_446_744_073_709_551_615 ])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    $logger.info "★★--------------------- int8"
+    val = controller.create_variable("Int8Variable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.Int8Variable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_INT8)
+    val.set_value(-128)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("Int8ArrayVariable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.Int8ArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":2 }", :ORIN3_INT8_ARRAY)
+    val.set_value([-128, 127])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("NullableInt8Variable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableInt8Variable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_NULLABLE_INT8)
+    val.set_value(-128)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+    val.set_value(nil)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value() || "nil"}"
+
+    val = controller.create_variable("NullableInt8ArrayVariable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableInt8ArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":3 }", :ORIN3_NULLABLE_INT8_ARRAY)
+    val.set_value([ -128, nil, 127 ])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    $logger.info "★★--------------------- int16"
+    val = controller.create_variable("Int16Variable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.Int16Variable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_INT16)
+    val.set_value(-32768)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("Int16ArrayVariable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.Int16ArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":2 }", :ORIN3_INT16_ARRAY)
+    val.set_value([-32768, 32767])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("NullableInt16Variable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableInt16Variable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_NULLABLE_INT16)
+    val.set_value(-32768)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+    val.set_value(nil)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value() || "nil"}"
+
+    val = controller.create_variable("NullableInt16ArrayVariable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableInt16ArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":3 }", :ORIN3_NULLABLE_INT16_ARRAY)
+    val.set_value([ -32768, nil, 32767 ])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    $logger.info "★★--------------------- int32"
+    val = controller.create_variable("Int32Variable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.Int32Variable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_INT32)
+    val.set_value(-2_147_483_648)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("Int32ArrayVariable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.Int32ArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":2 }", :ORIN3_INT32_ARRAY)
+    val.set_value([-2_147_483_648, 2_147_483_647])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("NullableInt32Variable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableInt32Variable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_NULLABLE_INT32)
+    val.set_value(-2_147_483_648)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+    val.set_value(nil)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value() || "nil"}"
+
+    val = controller.create_variable("NullableInt32ArrayVariable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableInt32ArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":3 }", :ORIN3_NULLABLE_INT32_ARRAY)
+    val.set_value([ -2_147_483_648, nil, 2_147_483_647 ])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    $logger.info "★★--------------------- int64"
+    val = controller.create_variable("Int64Variable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.Int64Variable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_INT64)
+    val.set_value(-9_223_372_036_854_775_808)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("Int64ArrayVariable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.Int64ArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":2 }", :ORIN3_INT64_ARRAY)
+    val.set_value([-9_223_372_036_854_775_808, 9_223_372_036_854_775_807])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    val = controller.create_variable("NullableInt64Variable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableInt64Variable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\" }", :ORIN3_NULLABLE_INT64)
+    val.set_value(-9_223_372_036_854_775_808)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+    val.set_value(nil)
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value() || "nil"}"
+
+    val = controller.create_variable("NullableInt64ArrayVariable",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Variable.NullableInt64ArrayVariable, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.84-beta.8\", \"Element Count\":3 }", :ORIN3_NULLABLE_INT64_ARRAY)
+    val.set_value([ -9_223_372_036_854_775_808, nil, 9_223_372_036_854_775_807 ])
+    $logger.info "class: #{val.get_value().class.name}, value: #{val.get_value.nil? ? "nil" : val.get_value}"
+
+    nullableBoolArrayVal.hoge
+
     root.set_tag("Bool1", true, ORiN3BinaryConverter::DataType::Bool)
     root.set_tag("Bool2", false, ORiN3BinaryConverter::DataType::Bool)
     root.set_tag("BoolArray", [ true, false, true ], ORiN3BinaryConverter::DataType::BoolArray)
@@ -239,8 +464,8 @@ class ORiN3ProviderTest < Minitest::Test
     #root.set_tag("StringArray", [ "aa", nil, "bb" ], ORiN3BinaryConverter::DataType::StringArray)
     root.set_tag("StringArray", [ "aa", "bb" ], ORiN3BinaryConverter::DataType::StringArray)
 
-    dt = DateTime.parse('2024-11-24T08:16:58.1544812Z')
-    root.set_tag("DateTime", dt, ORiN3BinaryConverter::DataType::DateTime)
+    # dt = DateTime.parse('2024-11-24T08:16:58.1544812Z')
+    # root.set_tag("DateTime", dt, ORiN3BinaryConverter::DataType::DateTime)
     root.set_tag("Int8", 22, ORiN3BinaryConverter::DataType::Int8)
     root.set_tag("Int8Array", [ 22, 23, 24 ], ORiN3BinaryConverter::DataType::Int8Array)
     root.set_tag("NullableInt8Array", [ 22, nil, 24 ], ORiN3BinaryConverter::DataType::NullableInt8Array)
