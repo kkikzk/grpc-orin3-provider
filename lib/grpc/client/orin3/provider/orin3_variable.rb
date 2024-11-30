@@ -131,7 +131,7 @@ module Grpc
               when :ORIN3_DOUBLE
                 return response.value.double.raw_value
               when :ORIN3_NULLABLE_DOUBLE
-                return response.value.nullable_double.is_null == true ? nil : response.value.nullable_oouble.raw_value
+                return response.value.nullable_double.is_null == true ? nil : response.value.nullable_double.raw_value
               when :ORIN3_DOUBLE_ARRAY
                 return response.value.double_array.raw_value.map { |it| it }
               when :ORIN3_NULLABLE_DOUBLE_ARRAY
@@ -147,9 +147,13 @@ module Grpc
                 return response.value.nullable_datetime_array.raw_value.map { |it| it.is_null == true ? nil : Grpc::ORiN3::Provider::DateTimeConverter.from_int64(it.raw_value) }
               # STRING
               when :ORIN3_STRING
-                return response.value.string.raw_value
+                if response.value.string.is_null
+                  return nil
+                else
+                  return response.value.string.raw_value
+                end
               when :ORIN3_STRING_ARRAY
-                return response.value.strin_array.raw_value.map { |it| it }
+                return response.value.string_array.raw_value.map { |it| it.is_null ? nil : it.raw_value }
               else
                 return ORiN3BinaryConverter.deserialize(response.value.int32.raw_value)
               end
@@ -406,7 +410,7 @@ module Grpc
                     raise ArgumentError, "Value is not Time."
                   end
                 end
-                orin3_value.datetime_array = O3P::ORiN3DateTimeArray.new(raw_value: value.map { |it| Grpc::ORiN3::Provider::DateTimeConverter.to_int6(it) })
+                orin3_value.datetime_array = O3P::ORiN3DateTimeArray.new(raw_value: value.map { |it| Grpc::ORiN3::Provider::DateTimeConverter.to_int64(it) })
               when :ORIN3_NULLABLE_DATETIME
                 if !value.nil? && !value.is_a?(Time)
                   raise ArgumentError, "Value is not Time."
@@ -424,9 +428,26 @@ module Grpc
                   end
                 end
                 orin3_value.nullable_datetime_array = O3P::ORiN3NullableDateTimeArray.new(raw_value: value.map { |it| O3P::ORiN3NullableDateTime.new(is_null: it.nil?, raw_value: it.nil? ? nil : Grpc::ORiN3::Provider::DateTimeConverter.to_int64(it)) })
-
+              # STRING
+              when :ORIN3_STRING
+                if !value.nil? && !value.is_a?(String)
+                  raise ArgumentError, "Value is not String."
+                end
+                orin3_value.string = O3P::ORiN3String.new(is_null: value.nil?, raw_value: value)
+              when :ORIN3_STRING_ARRAY
+                if value.nil?
+                  raise ArgumentError, "Value is nil."
+                elsif !value.is_a?(Array)
+                  raise ArgumentError, "Value is not Array."
+                end
+                value.each do |item|
+                  if !item.nil? && !item.is_a?(String)
+                    raise ArgumentError, "Value is not String."
+                  end
+                end
+                orin3_value.string_array = O3P::ORiN3StringArray.new(raw_value: value.map { |it| O3P::ORiN3String.new(is_null: it.nil?, raw_value: it) })
               else
-                  
+                raise ArgumentError.new("Not supported.")
               end
               variable = O3::VariableService::Stub.new(nil, :this_channel_is_insecure, channel_override: @channel)
               request = O3::SetValueRequest.new(common: O3P::CommonRequest.new, id: @internal_id, value: orin3_value)

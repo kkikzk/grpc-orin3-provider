@@ -68,6 +68,9 @@ module Grpc
           def set_tag(key, tag, type = nil)
             begin
               sut = O3::BaseObjectService::Stub.new(nil, :this_channel_is_insecure, channel_override: @channel)
+              if type == ORiN3BinaryConverter::DataType::StringArray
+                puts ORiN3BinaryConverter.serialize(tag, type).unpack('H*')[0].scan(/../).join(' ')
+              end
               request = O3::SetTagRequest.new(common: O3P::CommonRequest.new, id: @internal_id, key: key, tag: ORiN3BinaryConverter.serialize(tag, type))
               response = sut.set_tag(request)
               if (response.common.result_code != :SUCCEEDED)
