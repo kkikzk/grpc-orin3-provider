@@ -384,30 +384,33 @@ class ORiN3BinaryConverter
       return byte_array.pack('C*')
 
     when ORiN3BinaryConverter::DataType::Bool
-      serialize_not_null_not_array_no_range(data, type, 1) { data ? 1 : 0 }
+      serialize_not_null_not_array_no_range([ TrueClass, FalseClass ], data, type, 1) { data ? 1 : 0 }
     when ORiN3BinaryConverter::DataType::UInt8
-      serialize_not_null_not_array(data, type, 1, UINT8_MIN, UINT8_MAX, "UInt8") { data }
+      serialize_not_null_not_array([ Integer ], data, type, 1, UINT8_MIN, UINT8_MAX, "UInt8") { data }
     when ORiN3BinaryConverter::DataType::UInt16
-      serialize_not_null_not_array(data, type, 2, UINT16_MIN, UINT16_MAX, "UInt16") { [data].pack('S<').bytes }
+      serialize_not_null_not_array([ Integer ], data, type, 2, UINT16_MIN, UINT16_MAX, "UInt16") { [data].pack('S<').bytes }
     when ORiN3BinaryConverter::DataType::UInt32
-      serialize_not_null_not_array(data, type, 4, UINT32_MIN, UINT32_MAX, "UInt32") { [data].pack('L<').bytes }
+      serialize_not_null_not_array([ Integer ], data, type, 4, UINT32_MIN, UINT32_MAX, "UInt32") { [data].pack('L<').bytes }
     when ORiN3BinaryConverter::DataType::UInt64
-      serialize_not_null_not_array(data, type, 8, UINT64_MIN, UINT64_MAX, "UInt64") { [data].pack('Q<').bytes }
+      serialize_not_null_not_array([ Integer ], data, type, 8, UINT64_MIN, UINT64_MAX, "UInt64") { [data].pack('Q<').bytes }
     when ORiN3BinaryConverter::DataType::Int8
-      serialize_not_null_not_array(data, type, 1, INT8_MIN, INT8_MAX, "Int8") { data }
+      serialize_not_null_not_array([ Integer ], data, type, 1, INT8_MIN, INT8_MAX, "Int8") { data }
     when ORiN3BinaryConverter::DataType::Int16
-      serialize_not_null_not_array(data, type, 2, INT16_MIN, INT16_MAX, "Int16") { [data].pack('s<').bytes }
+      serialize_not_null_not_array([ Integer ], data, type, 2, INT16_MIN, INT16_MAX, "Int16") { [data].pack('s<').bytes }
     when ORiN3BinaryConverter::DataType::Int32
-      serialize_not_null_not_array(data, type, 4, INT32_MIN, INT32_MAX, "Int32") { [data].pack('l<').bytes }
+      serialize_not_null_not_array([ Integer ], data, type, 4, INT32_MIN, INT32_MAX, "Int32") { [data].pack('l<').bytes }
     when ORiN3BinaryConverter::DataType::Int64
-      serialize_not_null_not_array(data, type, 8, INT64_MIN, INT64_MAX, "Int64") { [data].pack('q<').bytes }
+      serialize_not_null_not_array([ Integer ], data, type, 8, INT64_MIN, INT64_MAX, "Int64") { [data].pack('q<').bytes }
     when ORiN3BinaryConverter::DataType::Float
-      serialize_not_null_not_array_no_range(data, type, 4) { [data].pack('e').bytes }
+      serialize_not_null_not_array_no_range([ Float ], data, type, 4) { [data].pack('e').bytes }
     when ORiN3BinaryConverter::DataType::Double
-      serialize_not_null_not_array_no_range(data, type, 8) { [data].pack('E').bytes }
+      serialize_not_null_not_array_no_range([ Float ], data, type, 8) { [data].pack('E').bytes }
     when ORiN3BinaryConverter::DataType::DateTime
-      serialize_not_null_not_array_no_range(data, type, 8) { [Grpc::ORiN3::Provider::DateTimeConverter.to_int64(data)].pack('q<').bytes }
+      serialize_not_null_not_array_no_range([ Time ], data, type, 8) { [Grpc::ORiN3::Provider::DateTimeConverter.to_int64(data)].pack('q<').bytes }
     when ORiN3BinaryConverter::DataType::String
+      if !data.nil? && !data.is_a?(String)
+        raise ArgumentError, "Value is not #{String}."
+      end
       string_bytes = data.bytes
       length = string_bytes.length
       byte_array = Array.new(1 + 4 + length, 0)
@@ -417,32 +420,39 @@ class ORiN3BinaryConverter
       return byte_array.pack('C*')
 
     when ORiN3BinaryConverter::DataType::BoolArray
-      serialize_not_null_array_no_range(data, type, 1) { |item| item ? 1 : 0 }
+      serialize_not_null_array_no_range([ TrueClass, FalseClass ], data, type, 1) { |item| item ? 1 : 0 }
     when ORiN3BinaryConverter::DataType::UInt8Array
-      serialize_not_null_array(data, type, 1, UINT8_MIN, UINT8_MAX, "UInt8") { |item| item }
+      serialize_not_null_array([ Integer ], data, type, 1, UINT8_MIN, UINT8_MAX, "UInt8") { |item| item }
     when ORiN3BinaryConverter::DataType::UInt16Array
-      serialize_not_null_array(data, type, 2, UINT16_MIN, UINT16_MAX, "UInt16") { |item| [item].pack('S<').bytes }
+      serialize_not_null_array([ Integer ], data, type, 2, UINT16_MIN, UINT16_MAX, "UInt16") { |item| [item].pack('S<').bytes }
     when ORiN3BinaryConverter::DataType::UInt32Array
-      serialize_not_null_array(data, type, 4, UINT32_MIN, UINT32_MAX, "UInt32") { |item| [item].pack('L<').bytes }
+      serialize_not_null_array([ Integer ], data, type, 4, UINT32_MIN, UINT32_MAX, "UInt32") { |item| [item].pack('L<').bytes }
     when ORiN3BinaryConverter::DataType::UInt64Array
-      serialize_not_null_array(data, type, 8, UINT64_MIN, UINT64_MAX, "UInt64") { |item| [item].pack('Q<').bytes }
+      serialize_not_null_array([ Integer ], data, type, 8, UINT64_MIN, UINT64_MAX, "UInt64") { |item| [item].pack('Q<').bytes }
     when ORiN3BinaryConverter::DataType::Int8Array
-      serialize_not_null_array(data, type, 1, INT8_MIN, INT8_MAX, "Int8") { |item| item }
+      serialize_not_null_array([ Integer ], data, type, 1, INT8_MIN, INT8_MAX, "Int8") { |item| item }
     when ORiN3BinaryConverter::DataType::Int16Array
-      serialize_not_null_array(data, type, 2, INT16_MIN, INT16_MAX, "Int16") { |item| [item].pack('s<').bytes }
+      serialize_not_null_array([ Integer ], data, type, 2, INT16_MIN, INT16_MAX, "Int16") { |item| [item].pack('s<').bytes }
     when ORiN3BinaryConverter::DataType::Int32Array
-      serialize_not_null_array(data, type, 4, INT32_MIN, INT32_MAX, "Int32") { |item| [item].pack('l<').bytes }
+      serialize_not_null_array([ Integer ], data, type, 4, INT32_MIN, INT32_MAX, "Int32") { |item| [item].pack('l<').bytes }
     when ORiN3BinaryConverter::DataType::Int64Array
-      serialize_not_null_array(data, type, 8, INT64_MIN, INT64_MAX, "Int64") { |item| [item].pack('q<').bytes }
+      serialize_not_null_array([ Integer ], data, type, 8, INT64_MIN, INT64_MAX, "Int64") { |item| [item].pack('q<').bytes }
     when ORiN3BinaryConverter::DataType::FloatArray
-      serialize_not_null_array_no_range(data, type, 4) { |item| [item].pack('e').bytes }
+      serialize_not_null_array_no_range([ Float ], data, type, 4) { |item| [item].pack('e').bytes }
     when ORiN3BinaryConverter::DataType::DoubleArray
-      serialize_not_null_array_no_range(data, type, 8) { |item| [item].pack('E').bytes }
+      serialize_not_null_array_no_range([ Float ], data, type, 8) { |item| [item].pack('E').bytes }
     when ORiN3BinaryConverter::DataType::DateTimeArray
-      serialize_not_null_array_no_range(data, type, 8) { |item| [Grpc::ORiN3::Provider::DateTimeConverter.to_int64(item)].pack('q<').bytes }
+      serialize_not_null_array_no_range([ Time ], data, type, 8) { |item| [Grpc::ORiN3::Provider::DateTimeConverter.to_int64(item)].pack('q<').bytes }
     when ORiN3BinaryConverter::DataType::StringArray
       if data.nil?
         raise ArgumentError, "Value is nil."
+      elsif !data.is_a?(Array)
+        raise ArgumentError, "Value is not Array."
+      end
+      data.each do |item|
+        if !item.nil? && !item.is_a?(String)
+          raise ArgumentError, "Value is not #{String}."
+        end
       end
       total_length = data.sum { |item| item.nil? ? 0 : item.bytes.length } + data.length * 5 + 5
       byte_array = Array.new(total_length, 0)
@@ -468,6 +478,13 @@ class ORiN3BinaryConverter
     when ORiN3BinaryConverter::DataType::NullableBoolArray
       if data.nil?
         raise ArgumentError, "Value is nil."
+      elsif !data.is_a?(Array)
+        raise ArgumentError, "Value is not Array."
+      end
+      data.each do |item|
+        if !item.nil? && (!item.is_a?(TrueClass) && !item.is_a?(FalseClass))
+          raise ArgumentError, "Value is not #{String}."
+        end
       end
       byte_array = Array.new(1 + 4 + data.length, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::NullableBoolArray
@@ -482,42 +499,46 @@ class ORiN3BinaryConverter
       return byte_array.pack('C*')
 
     when ORiN3BinaryConverter::DataType::NullableUInt8Array
-      serialize_array(data, type, 1, UINT8_MIN, UINT8_MAX, "UInt8") { |item| item }
+      serialize_array([ Integer ], data, type, 1, UINT8_MIN, UINT8_MAX, "UInt8") { |item| item }
     when ORiN3BinaryConverter::DataType::NullableUInt16Array
-      serialize_array(data, type, 2, UINT16_MIN, UINT16_MAX, "UInt16") { |item| [item].pack('S<').bytes }
+      serialize_array([ Integer ], data, type, 2, UINT16_MIN, UINT16_MAX, "UInt16") { |item| [item].pack('S<').bytes }
     when ORiN3BinaryConverter::DataType::NullableUInt32Array
-      serialize_array(data, type, 4, UINT32_MIN, UINT32_MAX, "UInt32") { |item| [item].pack('L<').bytes }
+      serialize_array([ Integer ], data, type, 4, UINT32_MIN, UINT32_MAX, "UInt32") { |item| [item].pack('L<').bytes }
     when ORiN3BinaryConverter::DataType::NullableUInt64Array
-      serialize_array(data, type, 8, UINT64_MIN, UINT64_MAX, "UInt64") { |item| [item].pack('Q<').bytes }
+      serialize_array([ Integer ], data, type, 8, UINT64_MIN, UINT64_MAX, "UInt64") { |item| [item].pack('Q<').bytes }
     when ORiN3BinaryConverter::DataType::NullableInt8Array
-      serialize_array(data, type, 1, INT8_MIN, INT8_MAX, "Int8") { |item| item }
+      serialize_array([ Integer ], data, type, 1, INT8_MIN, INT8_MAX, "Int8") { |item| item }
     when ORiN3BinaryConverter::DataType::NullableInt16Array
-      serialize_array(data, type, 2, INT16_MIN, INT16_MAX, "Int16") { |item| [item].pack('s<').bytes }
+      serialize_array([ Integer ], data, type, 2, INT16_MIN, INT16_MAX, "Int16") { |item| [item].pack('s<').bytes }
     when ORiN3BinaryConverter::DataType::NullableInt32Array
-      serialize_array(data, type, 4, INT32_MIN, INT32_MAX, "Int32") { |item| [item].pack('l<').bytes }
+      serialize_array([ Integer ], data, type, 4, INT32_MIN, INT32_MAX, "Int32") { |item| [item].pack('l<').bytes }
     when ORiN3BinaryConverter::DataType::NullableInt64Array
-      serialize_array(data, type, 8, INT64_MIN, INT64_MAX, "Int64") { |item| [item].pack('q<').bytes }
+      serialize_array([ Integer ], data, type, 8, INT64_MIN, INT64_MAX, "Int64") { |item| [item].pack('q<').bytes }
     when ORiN3BinaryConverter::DataType::NullableFloatArray
-      serialize_array_no_range(data, type, 4) { |item| [item].pack('e').bytes }
+      serialize_array_no_range([ Float ], data, type, 4) { |item| [item].pack('e').bytes }
     when ORiN3BinaryConverter::DataType::NullableDoubleArray
-      serialize_array_no_range(data, type, 8) { |item| [item].pack('E').bytes }
+      serialize_array_no_range([ Float ], data, type, 8) { |item| [item].pack('E').bytes }
     when ORiN3BinaryConverter::DataType::NullableDateTimeArray
-      serialize_array_no_range(data, type, 8) { |item| [Grpc::ORiN3::Provider::DateTimeConverter.to_int64(item)].pack('q<').bytes }
+      serialize_array_no_range([ Time ], data, type, 8) { |item| [Grpc::ORiN3::Provider::DateTimeConverter.to_int64(item)].pack('q<').bytes }
     else
       raise ArgumentError, "Unsupported data type"
     end
   end
 
-  def self.serialize_not_null_not_array(data, type, data_size, min, max, type_name, &packer)
-    if !data.nil? && (data < min || max < data)
+  def self.serialize_not_null_not_array(ruby_type, data, type, data_size, min, max, type_name, &packer)
+    if !data.nil? && !ruby_type.any? { |element| data.is_a?(element) }
+      raise ArgumentError, "Value is not #{ruby_type}."
+    elsif !data.nil? && (data < min || max < data)
       raise ArgumentError, "Value #{data} is out of range for #{type_name}. It must be between #{min} and #{max}."
     end
-    serialize_not_null_not_array_no_range(data, type, data_size) { yield packer }
+    serialize_not_null_not_array_no_range(ruby_type, data, type, data_size) { yield packer }
   end
 
-  def self.serialize_not_null_not_array_no_range(data, type, data_size, &packer)
+  def self.serialize_not_null_not_array_no_range(ruby_type, data, type, data_size, &packer)
     if data.nil?
       raise ArgumentError, "Value is nil."
+    elsif !ruby_type.any? { |element| data.is_a?(element) }
+      raise ArgumentError, "Value is not #{ruby_type}."
     end
     byte_array = Array.new(data_size + 1, 0)
     byte_array[0] = type
@@ -525,15 +546,15 @@ class ORiN3BinaryConverter
     return byte_array.pack('C*')
   end
 
-  def self.serialize_not_null_array(data, type, data_size, min, max, type_name, &packer)
-    serialize_not_null_array_core(data, type, data_size, true, min, max, type_name) { |item| yield item }
+  def self.serialize_not_null_array(ruby_type, data, type, data_size, min, max, type_name, &packer)
+    serialize_not_null_array_core(ruby_type, data, type, data_size, true, min, max, type_name) { |item| yield item }
   end
 
-  def self.serialize_not_null_array_no_range(data, type, data_size, &packer)
-    serialize_not_null_array_core(data, type, data_size, false, nil, nil, nil) { |item| yield item }
+  def self.serialize_not_null_array_no_range(ruby_type, data, type, data_size, &packer)
+    serialize_not_null_array_core(ruby_type, data, type, data_size, false, nil, nil, nil) { |item| yield item }
   end
 
-  def self.serialize_not_null_array_core(data, type, data_size, range_check_flg, min, max, type_name, &packer)
+  def self.serialize_not_null_array_core(ruby_type, data, type, data_size, range_check_flg, min, max, type_name, &packer)
     if data.nil?
       raise ArgumentError, "Value is nil."
     elsif !data.is_a?(Array)
@@ -545,6 +566,8 @@ class ORiN3BinaryConverter
     data.each_with_index do |item, index|
       if item.nil?
         raise ArgumentError, "Value is nil."
+      elsif !ruby_type.any? { |element| item.is_a?(element) }
+        raise ArgumentError, "Value is not #{ruby_type}."
       elsif range_check_flg && (item < min || max < item)
         raise ArgumentError, "Value #{item} is out of range for #{type_name}. It must be between #{min} and #{max}."
       end
@@ -553,15 +576,15 @@ class ORiN3BinaryConverter
     return byte_array.pack('C*')
   end
 
-  def self.serialize_array(data, type, data_size, min, max, type_name, &packer)
-    serialize_array_core(data, type, data_size, true, min, max, type_name) { |item| yield item }
+  def self.serialize_array(ruby_type, data, type, data_size, min, max, type_name, &packer)
+    serialize_array_core(ruby_type, data, type, data_size, true, min, max, type_name) { |item| yield item }
   end
 
-  def self.serialize_array_no_range(data, type, data_size, &packer)
-    serialize_array_core(data, type, data_size, false, nil, nil, nil) { |item| yield item }
+  def self.serialize_array_no_range(ruby_type, data, type, data_size, &packer)
+    serialize_array_core(ruby_type, data, type, data_size, false, nil, nil, nil) { |item| yield item }
   end
 
-  def self.serialize_array_core(data, type, data_size, range_check_flg, min, max, type_name, &packer)
+  def self.serialize_array_core(ruby_type, data, type, data_size, range_check_flg, min, max, type_name, &packer)
     if data.nil?
       raise ArgumentError, "Value is nil."
     elsif !data.is_a?(Array)
@@ -571,7 +594,9 @@ class ORiN3BinaryConverter
     byte_array[0] = type
     byte_array[1..4] = [data.length].pack('l<').bytes
     data.each_with_index do |item, index|
-      if range_check_flg && !item.nil? && (item < min || max < item)
+      if !item.nil? && !ruby_type.any? { |element| item.is_a?(element) }
+        raise ArgumentError, "Value is not #{ruby_type}."
+      elsif range_check_flg && !item.nil? && (item < min || max < item)
         raise ArgumentError, "Value #{item} is out of range for #{type_name}. It must be between #{min} and #{max}."
       end
       if !item.nil?

@@ -204,31 +204,56 @@ class ORiN3ProviderTest < Minitest::Test
     #{ name: "TAG_TEST_DATA", type: ORiN3BinaryConverter::DataType::String, value: { common: "abc𩸽123", nil: nil } }, # stringのnullの扱いに問題あり
     # Array
     { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::BoolArray, value: { common: [ false, true ] } },
+    { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::BoolArray, value: { common: [] } },
     { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::UInt8Array, value: { common: [ UINT8_MIN, 1, UINT8_MAX ] } },
+    { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::UInt8Array, value: { common: [] } },
     { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::UInt16Array, value: { common: [ UINT16_MIN, 1, UINT16_MAX ] } },
+    { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::UInt16Array, value: { common: [] } },
     { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::UInt32Array, value: { common: [ UINT32_MIN, 1, UINT32_MAX ] } },
+    { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::UInt32Array, value: { common: [] } },
     { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::UInt64Array, value: { common: [ UINT64_MIN, 1, UINT64_MAX ] } },
+    { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::UInt64Array, value: { common: [] } },
     { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::Int8Array, value: { common: [ INT8_MIN, 0, INT8_MAX ] } },
+    { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::Int8Array, value: { common: [] } },
     { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::Int16Array, value: { common: [ INT16_MIN, 0, INT16_MAX ] } },
+    { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::Int16Array, value: { common: [] } },
     { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::Int32Array, value: { common: [ INT32_MIN, 0, INT32_MAX ] } },
+    { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::Int32Array, value: { common: [] } },
     { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::Int64Array, value: { common: [ INT64_MIN, 0, INT32_MAX ] } },
+    { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::Int64Array, value: { common: [] } },
     { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::FloatArray, value: { common: [ 0.0, 1.0 ] } },
+    { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::FloatArray, value: { common: [] } },
     { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::DoubleArray, value: { common: [ DOUBLE_MIN, 0.0, DOUBLE_MAX ] } },
+    { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::DoubleArray, value: { common: [] } },
     { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::DateTimeArray, value: { common: [ Time.utc(1, 1, 1, 0, 0, 0), Time.utc(9999, 12, 31, 23, 59, 59) ] } },
+    { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::DateTimeArray, value: { common: [] } },
     #  { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::StringArray, value: { common: [ "abc", "𩸽", nil ] } }, # stringのnullの扱いに問題あり
+    #  { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::StringArray, value: { common: [] } }, # stringのnullの扱いに問題あり
     # NullableArray
     { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableBoolArray, value: { common: [ false, nil, true ] } },
+    { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableBoolArray, value: { common: [] } },
     { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableUInt8Array, value: { common: [ UINT8_MIN, 1, nil, UINT8_MAX ] } },
+    { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableUInt8Array, value: { common: [] } },
     { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableUInt16Array, value: { common: [ UINT16_MIN, 1, nil, UINT16_MAX ] } },
+    { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableUInt16Array, value: { common: [] } },
     { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableUInt32Array, value: { common: [ UINT32_MIN, 1, nil, UINT32_MAX ] } },
+    { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableUInt32Array, value: { common: [] } },
     { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableUInt64Array, value: { common: [ UINT64_MIN, 1, nil, UINT64_MAX ] } },
+    { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableUInt64Array, value: { common: [] } },
     { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableInt8Array, value: { common: [ INT8_MIN, 0, nil, INT8_MAX ] } },
+    { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableInt8Array, value: { common: [] } },
     { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableInt16Array, value: { common: [ INT16_MIN, 0, nil, INT16_MAX ] } },
+    { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableInt16Array, value: { common: [] } },
     { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableInt32Array, value: { common: [ INT32_MIN, 0, nil, INT32_MAX ] } },
+    { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableInt32Array, value: { common: [] } },
     { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableInt64Array, value: { common: [ INT64_MIN, 0, nil, INT32_MAX ] } },
+    { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableInt64Array, value: { common: [] } },
     { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableFloatArray, value: { common: [ 0.0, nil, 1.0 ] } },
-    #{ name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableDoubleArray, value: { common: [ DOUBLE_MIN, 0.0, nil, DOUBLE_MAX ] } },
-    #{ name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableDateTimeArray, value: { common: [ Time.utc(1, 1, 1, 0, 0, 0), nil, Time.utc(9999, 12, 31, 23, 59, 59) ] } },
+    { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableFloatArray, value: { common: [] } },
+    { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableDoubleArray, value: { common: [ DOUBLE_MIN, 0.0, nil, DOUBLE_MAX ] } },
+    { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableDoubleArray, value: { common: [] } },
+    { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableDateTimeArray, value: { common: [ Time.utc(1, 1, 1, 0, 0, 0), nil, Time.utc(9999, 12, 31, 23, 59, 59) ] } },
+    { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableDateTimeArray, value: { common: [] } },
   ] 
 
   TAG_TEST_DATA.each do |data|
@@ -328,6 +353,76 @@ class ORiN3ProviderTest < Minitest::Test
       end
       $logger.info "Exception message: #{exception.message}"
       assert_includes exception.message, "Value is nil."
+    end
+  end
+
+  TAG_RUBY_TYPE_TEST_DATA = [
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Bool, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt8, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt16, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt32, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt64, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int8, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int16, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int32, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int64, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Float, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Double, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::DateTime, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::String, ruby_type: Time },
+  ]
+
+  TAG_RUBY_TYPE_TEST_DATA.each do |data|
+    name = get_constant_name(data[:type], ORiN3BinaryConverter::DataType)
+    define_method("test_tag_ruby_type_#{name}") do
+      $logger.info "* test_tag_ruby_type_#{name} called."
+      controller = create_or_get_controller(data[:name])
+      exception = assert_raises(Grpc::Client::ORiN3::MessageClientError) do
+        controller.set_tag("tag_name", data[:ruby_type].new, data[:type])
+      end
+      $logger.info "Exception message: #{exception.message}"
+      assert_includes exception.message, "Value is not"
+    end
+  end
+
+  TAG_RUBY_TYPE_TEST_DATA2 = [
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::BoolArray, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt8Array, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt16Array, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt32Array, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt64Array, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int8Array, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int16Array, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int32Array, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int64Array, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::FloatArray, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::DoubleArray, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::DateTimeArray, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::StringArray, ruby_type: Time },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableBoolArray, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableUInt8Array, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableUInt16Array, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableUInt32Array, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableUInt64Array, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableInt8Array, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableInt16Array, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableInt32Array, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableInt64Array, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableFloatArray, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableDoubleArray, ruby_type: String },
+    { name: "TAG_RUBY_TYPE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableDateTimeArray, ruby_type: String },
+  ]
+
+  TAG_RUBY_TYPE_TEST_DATA2.each do |data|
+    name = get_constant_name(data[:type], ORiN3BinaryConverter::DataType)
+    define_method("test_tag_ruby_type2_#{name}") do
+      $logger.info "* test_tag_ruby_type2_#{name} called."
+      controller = create_or_get_controller(data[:name])
+      exception = assert_raises(Grpc::Client::ORiN3::MessageClientError) do
+        controller.set_tag("tag_name", [ data[:ruby_type].new ], data[:type])
+      end
+      $logger.info "Exception message: #{exception.message}"
+      assert_includes exception.message, "Value is not"
     end
   end
 
