@@ -331,27 +331,6 @@ class ORiN3ProviderTest < Minitest::Test
     end
   end
 
-  # UINT8_MIN = 0
-  # UINT8_MAX = 255
-  # UINT16_MIN = 0
-  # UINT16_MAX = 65535
-  # UINT32_MIN = 0
-  # UINT32_MAX = 4_294_967_295
-  # UINT64_MIN = 0
-  # UINT64_MAX = 18_446_744_073_709_551_615
-  # INT8_MIN = -128
-  # INT8_MAX = 127
-  # INT16_MIN = -32768
-  # INT16_MAX = 32767
-  # INT32_MIN = -2_147_483_648
-  # INT32_MAX = 2_147_483_647
-  # INT64_MIN = -9_223_372_036_854_775_808
-  # INT64_MAX = 9_223_372_036_854_775_807
-  # FLOAT_MIN = -3.40282347E+38
-  # FLOAT_MAX = 3.40282347E+38
-  # DOUBLE_MIN = -1.7976931348623157e+308
-  # DOUBLE_MAX = 1.7976931348623157e+308
-
   TAG_RANGE_TEST_DATA = [
     { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt8, values: [ UINT8_MIN - 1, UINT8_MAX + 1 ] },
     { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt16, values: [ UINT16_MIN - 1, UINT16_MAX + 1 ] },
