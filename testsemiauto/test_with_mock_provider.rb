@@ -50,7 +50,7 @@ class ORiN3ProviderTest < Minitest::Test
   def after_all
     puts "......................."
     $logger.info "* after_all called."
-    #after_all_core
+    after_all_core
     $logger.info "* after_all finished."
   end
   
