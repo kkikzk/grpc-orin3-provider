@@ -250,6 +250,150 @@ class ORiN3ProviderTest < Minitest::Test
     end
   end
 
+  TAG_NIL_TEST_DATA = [
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::Bool },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt8 },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt16 },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt32 },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt64 },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int8 },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int16 },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int32 },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int64 },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::Float },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::Double },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::DateTime },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::BoolArray },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt8Array },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt16Array },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt32Array },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt64Array },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int8Array },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int16Array },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int32Array },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int64Array },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::FloatArray },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::DoubleArray },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::DateTimeArray },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::StringArray },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableBoolArray },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableUInt8Array },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableUInt16Array },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableUInt32Array },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableUInt64Array },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableInt8Array },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableInt16Array },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableInt32Array },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableInt64Array },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableFloatArray },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableDoubleArray },
+    { name: "TAG_NIL_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableDateTimeArray },
+  ]
+
+  TAG_NIL_TEST_DATA.each do |data|
+    name = get_constant_name(data[:type], ORiN3BinaryConverter::DataType)
+    define_method("test_tag_nil_#{name}") do
+      $logger.info "* test_tag_nil_#{name} called."
+      controller = create_or_get_controller(data[:name])
+      exception = assert_raises(Grpc::Client::ORiN3::MessageClientError) do
+        controller.set_tag("tag_name", nil, data[:type])
+      end
+      $logger.info "Exception message: #{exception.message}"
+      assert_includes exception.message, "Value is nil."
+    end
+  end
+
+  TAG_NIL_TEST_DATA2 = [
+    { name: "TAG_NIL_TEST_DATA2", type: ORiN3BinaryConverter::DataType::BoolArray },
+    { name: "TAG_NIL_TEST_DATA2", type: ORiN3BinaryConverter::DataType::UInt8Array },
+    { name: "TAG_NIL_TEST_DATA2", type: ORiN3BinaryConverter::DataType::UInt16Array },
+    { name: "TAG_NIL_TEST_DATA2", type: ORiN3BinaryConverter::DataType::UInt32Array },
+    { name: "TAG_NIL_TEST_DATA2", type: ORiN3BinaryConverter::DataType::UInt64Array },
+    { name: "TAG_NIL_TEST_DATA2", type: ORiN3BinaryConverter::DataType::Int8Array },
+    { name: "TAG_NIL_TEST_DATA2", type: ORiN3BinaryConverter::DataType::Int16Array },
+    { name: "TAG_NIL_TEST_DATA2", type: ORiN3BinaryConverter::DataType::Int32Array },
+    { name: "TAG_NIL_TEST_DATA2", type: ORiN3BinaryConverter::DataType::Int64Array },
+    { name: "TAG_NIL_TEST_DATA2", type: ORiN3BinaryConverter::DataType::FloatArray },
+    { name: "TAG_NIL_TEST_DATA2", type: ORiN3BinaryConverter::DataType::DoubleArray },
+    { name: "TAG_NIL_TEST_DATA2", type: ORiN3BinaryConverter::DataType::DateTimeArray },
+  ]
+
+  TAG_NIL_TEST_DATA2.each do |data|
+    name = get_constant_name(data[:type], ORiN3BinaryConverter::DataType)
+    define_method("test_tag_nil2_#{name}") do
+      $logger.info "* test_tag_nil2_#{name} called."
+      controller = create_or_get_controller(data[:name])
+      exception = assert_raises(Grpc::Client::ORiN3::MessageClientError) do
+        controller.set_tag("tag_name", [ nil ], data[:type])
+      end
+      $logger.info "Exception message: #{exception.message}"
+      assert_includes exception.message, "Value is nil."
+    end
+  end
+
+  # UINT8_MIN = 0
+  # UINT8_MAX = 255
+  # UINT16_MIN = 0
+  # UINT16_MAX = 65535
+  # UINT32_MIN = 0
+  # UINT32_MAX = 4_294_967_295
+  # UINT64_MIN = 0
+  # UINT64_MAX = 18_446_744_073_709_551_615
+  # INT8_MIN = -128
+  # INT8_MAX = 127
+  # INT16_MIN = -32768
+  # INT16_MAX = 32767
+  # INT32_MIN = -2_147_483_648
+  # INT32_MAX = 2_147_483_647
+  # INT64_MIN = -9_223_372_036_854_775_808
+  # INT64_MAX = 9_223_372_036_854_775_807
+  # FLOAT_MIN = -3.40282347E+38
+  # FLOAT_MAX = 3.40282347E+38
+  # DOUBLE_MIN = -1.7976931348623157e+308
+  # DOUBLE_MAX = 1.7976931348623157e+308
+
+  TAG_RANGE_TEST_DATA = [
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt8, values: [ UINT8_MIN - 1, UINT8_MAX + 1 ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt16, values: [ UINT16_MIN - 1, UINT16_MAX + 1 ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt32, values: [ UINT32_MIN - 1, UINT32_MAX + 1 ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt64, values: [ UINT64_MIN - 1, UINT64_MAX + 1 ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int8, values: [ INT8_MIN - 1, INT8_MAX + 1 ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int16, values: [ INT16_MIN - 1, INT16_MAX + 1 ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int32, values: [ INT32_MIN - 1, INT32_MAX + 1 ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int64, values: [ INT64_MIN - 1, INT64_MAX + 1 ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt8Array, values: [ [ UINT8_MIN - 1 ], [ UINT8_MAX + 1 ] ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt16Array, values: [ [ UINT16_MIN - 1 ], [ UINT16_MAX + 1 ] ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt32Array, values: [ [ UINT32_MIN - 1 ], [ UINT32_MAX + 1 ] ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::UInt64Array, values: [ [ UINT64_MIN - 1 ], [ UINT64_MAX + 1 ] ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int8Array, values: [ [ INT8_MIN - 1, INT8_MAX + 1 ] ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int16Array, values: [ [ INT16_MIN - 1, INT16_MAX + 1 ] ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int32Array, values: [ [ INT32_MIN - 1, INT32_MAX + 1 ] ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::Int64Array, values: [ [ INT64_MIN - 1, INT64_MAX + 1 ] ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableUInt8Array, values: [ [ UINT8_MIN - 1 ], [ UINT8_MAX + 1 ] ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableUInt16Array, values: [ [ UINT16_MIN - 1 ], [ UINT16_MAX + 1 ] ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableUInt32Array, values: [ [ UINT32_MIN - 1 ], [ UINT32_MAX + 1 ] ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableUInt64Array, values: [ [ UINT64_MIN - 1 ], [ UINT64_MAX + 1 ] ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableInt8Array, values: [ [ INT8_MIN - 1, INT8_MAX + 1 ] ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableInt16Array, values: [ [ INT16_MIN - 1, INT16_MAX + 1 ] ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableInt32Array, values: [ [ INT32_MIN - 1, INT32_MAX + 1 ] ] },
+    { name: "TAG_RANGE_TEST_DATA", type: ORiN3BinaryConverter::DataType::NullableInt64Array, values: [ [ INT64_MIN - 1, INT64_MAX + 1 ] ] },
+  ]
+
+  TAG_RANGE_TEST_DATA.each do |data|
+    name = get_constant_name(data[:type], ORiN3BinaryConverter::DataType)
+    define_method("test_tag_range_#{name}") do
+      $logger.info "* test_tag_range_#{name} called."
+      controller = create_or_get_controller(data[:name])
+      data[:values].each do |value|
+        exception = assert_raises(Grpc::Client::ORiN3::MessageClientError) do
+          controller.set_tag("tag_name", value, data[:type])
+        end
+        $logger.info "Exception message: #{exception.message}"
+        assert_includes exception.message, "out of range"
+      end
+    end
+  end
+
   TAG_WITHOUT_TYPE_TEST_DATA = [
     { name: "TAG_WITHOUT_TYPE_TEST_DATA", type: "Nil", value: { nil: nil } },
     { name: "TAG_WITHOUT_TYPE_TEST_DATA", type: "Bool", value: { true: false, false: true } },

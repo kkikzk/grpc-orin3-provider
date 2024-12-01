@@ -59,6 +59,27 @@ class ORiN3BinaryConverter
     end
   end
 
+  UINT8_MIN = 0
+  UINT8_MAX = 255
+  UINT16_MIN = 0
+  UINT16_MAX = 65535
+  UINT32_MIN = 0
+  UINT32_MAX = 4_294_967_295
+  UINT64_MIN = 0
+  UINT64_MAX = 18_446_744_073_709_551_615
+  INT8_MIN = -128
+  INT8_MAX = 127
+  INT16_MIN = -32768
+  INT16_MAX = 32767
+  INT32_MIN = -2_147_483_648
+  INT32_MAX = 2_147_483_647
+  INT64_MIN = -9_223_372_036_854_775_808
+  INT64_MAX = 9_223_372_036_854_775_807
+  FLOAT_MIN = -3.40282347E+38
+  FLOAT_MAX = 3.40282347E+38
+  DOUBLE_MIN = -1.7976931348623157e+308
+  DOUBLE_MAX = 1.7976931348623157e+308
+
   def self.serialize(data, type = nil)
     if (!type.nil?)
       return self.serialize_core(data, type)
@@ -355,91 +376,142 @@ class ORiN3BinaryConverter
   end
 
   private
+  def self.serialize_not_null_not_array(data, type, data_size, min, max, type_name, &packer)
+    if data.nil?
+      raise ArgumentError, "Value is nil."
+    elsif data < min || max < data
+      raise ArgumentError, "Value #{data} is out of range for #{type_name}. It must be between #{min} and #{max}."
+    end
+    byte_array = Array.new(data_size + 1, 0)
+    byte_array[0] = type
+    byte_array[1..data_size] = yield packer
+    return byte_array.pack('C*')
+  end
+
   def self.serialize_core(data, type)
     case type
     when ORiN3BinaryConverter::DataType::Nil
       byte_array = Array.new(1, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::Nil
       return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::Bool
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(2, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::Bool
       byte_array[1] = data ? 1 : 0
       return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::UInt8
-      if data < 0 || data > 255
-        raise ArgumentError, "Value #{data} is out of range for UInt8. It must be between 0 and 255."
-      end
-      byte_array = Array.new(2, 0)
-      byte_array[0] = ORiN3BinaryConverter::DataType::UInt8
-      byte_array[1] = data
-      return byte_array.pack('C*')
-    when ORiN3BinaryConverter::DataType::Int8
-      if data < -128 || 127 < data
-        raise ArgumentError, "Value #{data} is out of range for Int8. It must be between -128 and 127."
-      end
-      byte_array = Array.new(2, 0)
-      byte_array[0] = ORiN3BinaryConverter::DataType::Int8
-      byte_array[1] = data
-      return byte_array.pack('C*')
+      serialize_not_null_not_array(data, type, 1, UINT8_MIN, UINT8_MAX, "UInt8") { data }
+      # if data.nil?
+      #   raise ArgumentError, "Value is nil."
+      # elsif data < UINT8_MIN || UINT8_MAX < data
+      #   raise ArgumentError, "Value #{data} is out of range for UInt8. It must be between #{UINT8_MIN} and #{UINT8_MAX}."
+      # end
+      # byte_array = Array.new(2, 0)
+      # byte_array[0] = ORiN3BinaryConverter::DataType::UInt8
+      # byte_array[1] = data
+      # return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::UInt16
-      if data < 0 || data > 65535
-        raise ArgumentError, "Value #{data} is out of range for UInt16. It must be between 0 and 65535."
-      end
-      byte_array = Array.new(3, 0)
-      byte_array[0] = ORiN3BinaryConverter::DataType::UInt16
-      byte_array[1..2] = [data].pack('S<').bytes
-      return byte_array.pack('C*')
-    when ORiN3BinaryConverter::DataType::Int16
-      if data < -32768 || data > 32767
-        raise ArgumentError, "Value #{data} is out of range for Int16. It must be between -32768 and 32767."
-      end
-      byte_array = Array.new(3, 0)
-      byte_array[0] = ORiN3BinaryConverter::DataType::Int16
-      byte_array[1..2] = [data].pack('s<').bytes
-      return byte_array.pack('C*')
+      serialize_not_null_not_array(data, type, 2, UINT16_MIN, UINT16_MAX, "UInt8") { [data].pack('S<').bytes }
+      # if data.nil?
+      #   raise ArgumentError, "Value is nil."
+      # elsif data < UINT16_MIN || UINT16_MAX < data
+      #   raise ArgumentError, "Value #{data} is out of range for UInt16. It must be between #{UINT16_MIN} and #{UINT16_MAX}."
+      # end
+      # byte_array = Array.new(3, 0)
+      # byte_array[0] = ORiN3BinaryConverter::DataType::UInt16
+      # byte_array[1..2] = [data].pack('S<').bytes
+      # return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::UInt32
-      if data < 0 || data > 4294967295
-        raise ArgumentError, "Value #{data} is out of range for UInt32. It must be between 0 and 4294967295."
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      elsif data < UINT32_MIN || UINT32_MAX < data
+        raise ArgumentError, "Value #{data} is out of range for UInt32. It must be between #{UINT32_MIN} and #{UINT32_MAX}."
       end
       byte_array = Array.new(5, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::UInt32
       byte_array[1..4] = [data].pack('L<').bytes
       return byte_array.pack('C*')
-    when ORiN3BinaryConverter::DataType::Int32
-      if data < -2147483648 || data > 2147483647
-        raise ArgumentError, "Value #{data} is out of range for Int32. It must be between -2147483648 and 2147483647."
-      end
-      byte_array = Array.new(5, 0)
-      byte_array[0] = ORiN3BinaryConverter::DataType::Int32
-      byte_array[1..4] = [data].pack('l<').bytes
-      return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::UInt64
-      if data < 0 || data > 18446744073709551615
-        raise ArgumentError, "Value #{data} is out of range for UInt64. It must be between 0 and 18446744073709551615."
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      elsif data < UINT64_MIN || UINT64_MAX < data
+        raise ArgumentError, "Value #{data} is out of range for UInt64. It must be between #{UINT64_MIN} and #{UINT64_MAX}."
       end
       byte_array = Array.new(9, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::UInt64
       byte_array[1..8] = [data].pack('Q<').bytes
       return byte_array.pack('C*')
+
+    when ORiN3BinaryConverter::DataType::Int8
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      elsif data < INT8_MIN || INT8_MAX < data
+        raise ArgumentError, "Value #{data} is out of range for Int8. It must be between #{INT8_MIN} and #{INT8_MAX}."
+      end
+      byte_array = Array.new(2, 0)
+      byte_array[0] = ORiN3BinaryConverter::DataType::Int8
+      byte_array[1] = data
+      return byte_array.pack('C*')
+
+    when ORiN3BinaryConverter::DataType::Int16
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      elsif data < INT16_MIN || INT16_MAX < data
+        raise ArgumentError, "Value #{data} is out of range for Int16. It must be between #{INT16_MIN} and #{INT16_MAX}."
+      end
+      byte_array = Array.new(3, 0)
+      byte_array[0] = ORiN3BinaryConverter::DataType::Int16
+      byte_array[1..2] = [data].pack('s<').bytes
+      return byte_array.pack('C*')
+
+    when ORiN3BinaryConverter::DataType::Int32
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      elsif data < INT32_MIN || INT32_MAX < data
+        raise ArgumentError, "Value #{data} is out of range for Int32. It must be between #{INT32_MIN} and #{INT32_MAX}."
+      end
+      byte_array = Array.new(5, 0)
+      byte_array[0] = ORiN3BinaryConverter::DataType::Int32
+      byte_array[1..4] = [data].pack('l<').bytes
+      return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::Int64
-      if data < -9223372036854775808 || data > 9223372036854775807
-        raise ArgumentError, "Value #{data} is out of range for Int64. It must be between -9223372036854775808 and 9223372036854775807."
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      elsif data < INT64_MIN || INT64_MAX < data
+        raise ArgumentError, "Value #{data} is out of range for Int64. It must be between #{INT64_MIN} and #{INT64_MAX}."
       end
       byte_array = Array.new(9, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::Int64
       byte_array[1..8] = [data].pack('q<').bytes
       return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::Float
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(5, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::Float
       byte_array[1..4] = [data].pack('e').bytes
       return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::Double
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(9, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::Double
       byte_array[1..8] = [data].pack('E').bytes
       return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::String
       string_bytes = data.bytes
       length = string_bytes.length
@@ -448,125 +520,202 @@ class ORiN3BinaryConverter
       byte_array[1..4] = [length].pack('L').bytes
       byte_array[5..] = string_bytes
       return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::DateTime
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       ticks = Grpc::ORiN3::Provider::DateTimeConverter.to_int64(data)
       byte_array = Array.new(9, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::DateTime
       byte_array[1..8] = [ticks].pack('q<').bytes
       return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::BoolArray
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + data.length, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::BoolArray
       byte_array[1..4] = [data.length].pack('l<').bytes
       data.each_with_index do |item, index|
+        if item.nil?
+          raise ArgumentError, "Value is nil."
+        end
         byte_array[5 + index] = data[index] ? 1 : 0
       end
       return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::UInt8Array
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + data.length, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::UInt8Array
       byte_array[1..4] = [data.length].pack('L<').bytes
       data.each_with_index do |item, index|
-        if (!item.nil? && (item < 0 || item > 255))
-          raise ArgumentError, "Value #{item} is out of range for UInt8. It must be between 0 and 255."
+        if item.nil?
+          raise ArgumentError, "Value is nil."
+        elsif item < UINT8_MIN || UINT8_MAX < item
+          raise ArgumentError, "Value #{item} is out of range for UInt8. It must be between #{UINT8_MIN} and #{UINT8_MAX}."
         end
         byte_array[5 + index] = item
       end
       return byte_array.pack('C*')
-    when ORiN3BinaryConverter::DataType::Int8Array
-      byte_array = Array.new(1 + 4 + data.length, 0)
-      byte_array[0] = ORiN3BinaryConverter::DataType::Int8Array
-      byte_array[1..4] = [data.length].pack('L<').bytes
-      data.each_with_index do |item, index|
-        if item < -128 || 127 < item
-          raise ArgumentError, "Value #{item} is out of range for Int8. It must be between -128 and 127."
-        end
-        byte_array[5 + index] = item
-      end
-      return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::UInt16Array
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + data.length * 2, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::UInt16Array
       byte_array[1..4] = [data.length].pack('L<').bytes
       data.each_with_index do |item, index|
-        if item < 0 || item > 65535
-          raise ArgumentError, "Value #{item} is out of range for UInt16. It must be between 0 and 65535."
+        if item.nil?
+          raise ArgumentError, "Value is nil."
+        elsif item < UINT16_MIN || UINT16_MAX < item
+          raise ArgumentError, "Value #{item} is out of range for UInt16. It must be between #{UINT16_MIN} and #{UINT16_MAX}."
         end
         byte_array[5 + index * 2, 2] = [item].pack('S<').bytes
       end
       return byte_array.pack('C*')
-    when ORiN3BinaryConverter::DataType::Int16Array
-      byte_array = Array.new(1 + 4 + data.length * 2, 0)
-      byte_array[0] = ORiN3BinaryConverter::DataType::Int16Array
-      byte_array[1..4] = [data.length].pack('L<').bytes
-      data.each_with_index do |item, index|
-        if item < -32768 || item > 32767
-          raise ArgumentError, "Value #{item} is out of range for Int16. It must be between -32768 and 32767."
-        end
-        byte_array[5 + index * 2, 2] = [item].pack('s<').bytes
-      end
-      return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::UInt32Array
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + data.length * 4, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::UInt32Array
       byte_array[1..4] = [data.length].pack('L<').bytes
       data.each_with_index do |item, index|
-        if item < 0 || item > 4294967295
-          raise ArgumentError, "Value #{item} is out of range for UInt32. It must be between 0 and 4294967295."
+        if item.nil?
+          raise ArgumentError, "Value is nil."
+        elsif item < UINT32_MIN || UINT32_MAX < item
+          raise ArgumentError, "Value #{item} is out of range for UInt32. It must be between #{UINT32_MIN} and #{UINT32_MAX}."
         end
         byte_array[5 + index * 4, 4] = [item].pack('L<').bytes
       end
       return byte_array.pack('C*')
-    when ORiN3BinaryConverter::DataType::Int32Array
-      byte_array = Array.new(1 + 4 + data.length * 4, 0)
-      byte_array[0] = ORiN3BinaryConverter::DataType::Int32Array
-      byte_array[1..4] = [data.length].pack('L<').bytes
-      data.each_with_index do |item, index|
-        if item < -2147483648 || item > 2147483647
-          raise ArgumentError, "Value #{item} is out of range for Int32. It must be between -2147483648 and 2147483647."
-        end
-        byte_array[5 + index * 4, 4] = [item].pack('l<').bytes
-      end
-      return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::UInt64Array
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + data.length * 8, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::UInt64Array
       byte_array[1..4] = [data.length].pack('L<').bytes
       data.each_with_index do |item, index|
-        if !item.nil? && (item < 0 || item > 18_446_744_073_709_551_615)
-          raise ArgumentError, "Value #{item} is out of range for UInt64. It must be between 0 and 18446744073709551615."
+        if item.nil?
+          raise ArgumentError, "Value is nil."
+        elsif item < UINT64_MIN || UINT64_MAX < item
+          raise ArgumentError, "Value #{item} is out of range for UInt64. It must be between #{UINT64_MIN} and #{UINT64_MAX}."
         end
         byte_array[5 + index * 8, 8] = [item].pack('Q<').bytes
       end
       return byte_array.pack('C*')
+
+    when ORiN3BinaryConverter::DataType::Int8Array
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
+      byte_array = Array.new(1 + 4 + data.length, 0)
+      byte_array[0] = ORiN3BinaryConverter::DataType::Int8Array
+      byte_array[1..4] = [data.length].pack('L<').bytes
+      data.each_with_index do |item, index|
+        if item.nil?
+          raise ArgumentError, "Value is nil."
+        elsif item < INT8_MIN || INT8_MAX < item
+          raise ArgumentError, "Value #{item} is out of range for Int8. It must be between #{INT8_MIN} and #{INT8_MAX}."
+        end
+        byte_array[5 + index] = item
+      end
+      return byte_array.pack('C*')
+
+    when ORiN3BinaryConverter::DataType::Int16Array
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
+      byte_array = Array.new(1 + 4 + data.length * 2, 0)
+      byte_array[0] = ORiN3BinaryConverter::DataType::Int16Array
+      byte_array[1..4] = [data.length].pack('L<').bytes
+      data.each_with_index do |item, index|
+        if item.nil?
+          raise ArgumentError, "Value is nil."
+        elsif item < INT16_MIN || INT16_MAX < item
+          raise ArgumentError, "Value #{item} is out of range for Int16. It must be between #{INT16_MIN} and #{INT16_MAX}."
+        end
+        byte_array[5 + index * 2, 2] = [item].pack('s<').bytes
+      end
+      return byte_array.pack('C*')
+
+    when ORiN3BinaryConverter::DataType::Int32Array
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
+      byte_array = Array.new(1 + 4 + data.length * 4, 0)
+      byte_array[0] = ORiN3BinaryConverter::DataType::Int32Array
+      byte_array[1..4] = [data.length].pack('L<').bytes
+      data.each_with_index do |item, index|
+        if item.nil?
+          raise ArgumentError, "Value is nil."
+        elsif item < INT32_MIN || INT32_MAX < item
+          raise ArgumentError, "Value #{item} is out of range for Int32. It must be between #{INT32_MIN} and #{INT32_MAX}."
+        end
+        byte_array[5 + index * 4, 4] = [item].pack('l<').bytes
+      end
+      return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::Int64Array
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + data.length * 8, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::Int64Array
       byte_array[1..4] = [data.length].pack('L<').bytes
       data.each_with_index do |item, index|
-        if item < -9223372036854775808 || item > 9223372036854775807
-          raise ArgumentError, "Value #{item} is out of range for Int64. It must be between -9223372036854775808 and 9223372036854775807."
+        if item.nil?
+          raise ArgumentError, "Value is nil."
+        elsif item < INT64_MIN || INT64_MAX < item
+          raise ArgumentError, "Value #{item} is out of range for Int64. It must be between #{INT64_MIN} and #{INT64_MAX}."
         end
         byte_array[5 + index * 8, 8] = [item].pack('q<').bytes
       end
       return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::FloatArray
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + data.length * 4, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::FloatArray
       byte_array[1..4] = [data.length].pack('L<').bytes
       data.each_with_index do |item, index|
+        if item.nil?
+          raise ArgumentError, "Value is nil."
+        end
         byte_array[5 + index * 4, 4] = [item].pack('e').bytes
       end
       return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::DoubleArray
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + data.length * 8, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::DoubleArray
       byte_array[1..4] = [data.length].pack('L<').bytes
       data.each_with_index do |item, index|
+        if item.nil?
+          raise ArgumentError, "Value is nil."
+        end
         byte_array[5 + index * 8, 8] = [item].pack('E').bytes
       end
       return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::StringArray
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       total_length = data.sum { |item| item.nil? ? 0 : item.bytes.length } + data.length * 5 + 5
       byte_array = Array.new(total_length, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::StringArray
@@ -587,16 +736,27 @@ class ORiN3BinaryConverter
         end
       end
       return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::DateTimeArray
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + data.length * 8, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::DateTimeArray
       byte_array[1..4] = [data.length].pack('L<').bytes
       data.each_with_index do |item, index|
+        if item.nil?
+          raise ArgumentError, "Value is nil."
+        end
         ticks = Grpc::ORiN3::Provider::DateTimeConverter.to_int64(item)
         byte_array[5 + index * 8, 8] = [ticks].pack('q<').bytes
       end
       return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::NullableBoolArray
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + data.length, 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::NullableBoolArray
       byte_array[1..4] = [data.length].pack('l<').bytes
@@ -608,13 +768,17 @@ class ORiN3BinaryConverter
         end
       end
       return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::NullableUInt8Array
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + (data.length * 2), 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::NullableUInt8Array
       byte_array[1..4] = [data.length].pack('l<').bytes
       data.each_with_index do |item, index|
-        if (!item.nil? && (item < 0 || item > 255))
-          raise ArgumentError, "Value #{item} is out of range for UInt8. It must be between 0 and 255."
+        if !item.nil? && (item < UINT8_MIN || UINT8_MAX < item)
+          raise ArgumentError, "Value #{item} is out of range for UInt8. It must be between #{UINT8_MIN} and #{UINT8_MAX}."
         end
         if !item.nil?
           byte_array[5 + (index * 2)] = 1
@@ -622,27 +786,17 @@ class ORiN3BinaryConverter
         end
       end
       return byte_array.pack('C*')
-    when ORiN3BinaryConverter::DataType::NullableInt8Array
-      byte_array = Array.new(1 + 4 + (data.length * 2), 0)
-      byte_array[0] = ORiN3BinaryConverter::DataType::NullableInt8Array
-      byte_array[1..4] = [data.length].pack('l<').bytes
-      data.each_with_index do |item, index|
-        if (!item.nil? && (item < -128 || item > 127))
-          raise ArgumentError, "Value #{item} is out of range for Int8. It must be between -128 and 127."
-        end
-        if !item.nil?
-          byte_array[5 + (index * 2)] = 1
-          byte_array[5 + (index * 2) + 1] = item & 0xFF
-        end
-      end
-      return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::NullableUInt16Array
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + (data.length * 3), 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::NullableUInt16Array
       byte_array[1..4] = [data.length].pack('l<').bytes
       data.each_with_index do |item, index|
-        if !item.nil? && (item < 0 || item > 65_535)
-          raise ArgumentError, "Value #{item} is out of range for UInt16. It must be between 0 and 65535."
+        if !item.nil? && (item < UINT16_MIN || UINT16_MAX < item)
+          raise ArgumentError, "Value #{item} is out of range for UInt16. It must be between #{UINT16_MIN} and #{UINT16_MAX}."
         end
         if !item.nil?
           byte_array[5 + (index * 3)] = 1
@@ -650,27 +804,17 @@ class ORiN3BinaryConverter
         end
       end
       return byte_array.pack('C*')
-    when ORiN3BinaryConverter::DataType::NullableInt16Array
-      byte_array = Array.new(1 + 4 + (data.length * 3), 0)
-      byte_array[0] = ORiN3BinaryConverter::DataType::NullableInt16Array
-      byte_array[1..4] = [data.length].pack('l<').bytes
-      data.each_with_index do |item, index|
-        if !item.nil? && (item < -32_768 || item > 32_767)
-          raise ArgumentError, "Value #{item} is out of range for Int16. It must be between -32768 and 32767."
-        end
-        if !item.nil?
-          byte_array[5 + (index * 3)] = 1
-          byte_array[5 + (index * 3) + 1, 2] = [item].pack('s<').bytes
-        end
-      end
-      return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::NullableUInt32Array
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + (data.length * 5), 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::NullableUInt32Array
       byte_array[1..4] = [data.length].pack('l<').bytes
       data.each_with_index do |item, index|
-        if !item.nil? && (item < 0 || item > 4_294_967_295)
-          raise ArgumentError, "Value #{item} is out of range for UInt32. It must be between 0 and 4294967295."
+        if !item.nil? && (item < UINT32_MIN || UINT32_MAX < item)
+          raise ArgumentError, "Value #{item} is out of range for UInt32. It must be between #{UINT32_MIN} and #{UINT32_MAX}."
         end
         if !item.nil?
           byte_array[5 + (index * 5)] = 1
@@ -678,27 +822,17 @@ class ORiN3BinaryConverter
         end
       end
       return byte_array.pack('C*')
-    when ORiN3BinaryConverter::DataType::NullableInt32Array
-      byte_array = Array.new(1 + 4 + (data.length * 5), 0)
-      byte_array[0] = ORiN3BinaryConverter::DataType::NullableInt32Array
-      byte_array[1..4] = [data.length].pack('l<').bytes
-      data.each_with_index do |item, index|
-        if !item.nil? && (item < -2_147_483_648 || item > 2_147_483_647)
-          raise ArgumentError, "Value #{item} is out of range for Int32. It must be between -2147483648 and 2147483647."
-        end
-        if !item.nil?
-          byte_array[5 + (index * 5)] = 1
-          byte_array[5 + (index * 5) + 1, 4] = [item].pack('l<').bytes
-        end
-      end
-      return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::NullableUInt64Array
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + (data.length * 9), 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::NullableUInt64Array
       byte_array[1..4] = [data.length].pack('l<').bytes
       data.each_with_index do |item, index|
-        if !item.nil? && (item < 0 || item > 18_446_744_073_709_551_615)
-          raise ArgumentError, "Value #{item} is out of range for UInt64. It must be between 0 and 18446744073709551615."
+        if !item.nil? && (item < UINT64_MIN || UINT64_MAX < item)
+          raise ArgumentError, "Value #{item} is out of range for UInt64. It must be between #{UINT64_MIN} and #{UINT64_MAX}."
         end
         if !item.nil?
           byte_array[5 + (index * 9)] = 1
@@ -706,13 +840,71 @@ class ORiN3BinaryConverter
         end
       end
       return byte_array.pack('C*')
+
+    when ORiN3BinaryConverter::DataType::NullableInt8Array
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
+      byte_array = Array.new(1 + 4 + (data.length * 2), 0)
+      byte_array[0] = ORiN3BinaryConverter::DataType::NullableInt8Array
+      byte_array[1..4] = [data.length].pack('l<').bytes
+      data.each_with_index do |item, index|
+        if !item.nil? && (item < INT8_MIN || INT8_MAX < item)
+          raise ArgumentError, "Value #{item} is out of range for Int8. It must be between #{INT8_MIN} and #{INT8_MAX}."
+        end
+        if !item.nil?
+          byte_array[5 + (index * 2)] = 1
+          byte_array[5 + (index * 2) + 1] = item & 0xFF
+        end
+      end
+      return byte_array.pack('C*')
+
+    when ORiN3BinaryConverter::DataType::NullableInt16Array
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
+      byte_array = Array.new(1 + 4 + (data.length * 3), 0)
+      byte_array[0] = ORiN3BinaryConverter::DataType::NullableInt16Array
+      byte_array[1..4] = [data.length].pack('l<').bytes
+      data.each_with_index do |item, index|
+        if !item.nil? && (item < INT16_MIN || INT16_MAX < item)
+          raise ArgumentError, "Value #{item} is out of range for Int16. It must be between #{INT16_MIN} and #{INT16_MAX}."
+        end
+        if !item.nil?
+          byte_array[5 + (index * 3)] = 1
+          byte_array[5 + (index * 3) + 1, 2] = [item].pack('s<').bytes
+        end
+      end
+      return byte_array.pack('C*')
+
+    when ORiN3BinaryConverter::DataType::NullableInt32Array
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
+      byte_array = Array.new(1 + 4 + (data.length * 5), 0)
+      byte_array[0] = ORiN3BinaryConverter::DataType::NullableInt32Array
+      byte_array[1..4] = [data.length].pack('l<').bytes
+      data.each_with_index do |item, index|
+        if !item.nil? && (item < INT32_MIN || INT32_MAX < item)
+          raise ArgumentError, "Value #{item} is out of range for Int32. It must be between #{INT32_MIN} and #{INT32_MAX}."
+        end
+        if !item.nil?
+          byte_array[5 + (index * 5)] = 1
+          byte_array[5 + (index * 5) + 1, 4] = [item].pack('l<').bytes
+        end
+      end
+      return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::NullableInt64Array
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + (data.length * 9), 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::NullableInt64Array
       byte_array[1..4] = [data.length].pack('l<').bytes
       data.each_with_index do |item, index|
-        if !item.nil? && (item < -9_223_372_036_854_775_808 || item > 9_223_372_036_854_775_807)
-          raise ArgumentError, "Value #{item} is out of range for Int64. It must be between -9223372036854775808 and 9223372036854775807."
+        if !item.nil? && (item < INT64_MIN || INT64_MAX < item)
+          raise ArgumentError, "Value #{item} is out of range for Int64. It must be between #{INT64_MIN} and #{INT64_MAX}."
         end
         if !item.nil?
           byte_array[5 + (index * 9)] = 1
@@ -720,7 +912,11 @@ class ORiN3BinaryConverter
         end
       end
       return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::NullableFloatArray
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + (data.length * 5), 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::NullableFloatArray
       byte_array[1..4] = [data.length].pack('l<').bytes
@@ -731,7 +927,11 @@ class ORiN3BinaryConverter
         end
       end
       return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::NullableDoubleArray
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + (data.length * 9), 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::NullableDoubleArray
       byte_array[1..4] = [data.length].pack('l<').bytes
@@ -742,7 +942,11 @@ class ORiN3BinaryConverter
         end
       end
       return byte_array.pack('C*')
+
     when ORiN3BinaryConverter::DataType::NullableDateTimeArray
+      if data.nil?
+        raise ArgumentError, "Value is nil."
+      end
       byte_array = Array.new(1 + 4 + (data.length * 9), 0)
       byte_array[0] = ORiN3BinaryConverter::DataType::NullableDateTimeArray
       byte_array[1..4] = [data.length].pack('L<').bytes
@@ -754,6 +958,7 @@ class ORiN3BinaryConverter
         end
       end
       return byte_array.pack('C*')
+
     else
       raise ArgumentError, "Unsupported data type"
     end
