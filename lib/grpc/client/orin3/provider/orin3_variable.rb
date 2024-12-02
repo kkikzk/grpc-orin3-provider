@@ -209,107 +209,107 @@ module Grpc
                 orin3_value.nullable_bool_array = O3P::ORiN3NullableBoolArray.new(raw_value: value.map { |it| O3P::ORiN3NullableBool.new(is_null: it.nil?, raw_value: it) })
               # UINT8
               when :ORIN3_UINT8
-                check_integer(value, false, 0, 255)
+                check_integer(value, false, ORiN3BinaryConverter::UINT8_MIN, ORiN3BinaryConverter::UINT8_MAX)
                 orin3_value.uint8 = O3P::ORiN3UInt8.new(raw_value: value)
               when :ORIN3_UINT8_ARRAY
-                check_array_integer(value, false, 0, 255)
+                check_array_integer(value, false, ORiN3BinaryConverter::UINT8_MIN, ORiN3BinaryConverter::UINT8_MAX)
                 orin3_value.uint8_array = O3P::ORiN3UInt8Array.new(raw_value: value)
               when :ORIN3_NULLABLE_UINT8
-                check_integer(value, true, 0, 255)
+                check_integer(value, true, ORiN3BinaryConverter::UINT8_MIN, ORiN3BinaryConverter::UINT8_MAX)
                 orin3_value.nullable_uint8 = O3P::ORiN3NullableUInt8.new(is_null: value.nil?, raw_value: value)
               when :ORIN3_NULLABLE_UINT8_ARRAY
-                check_array_integer(value, true, 0, 255)
+                check_array_integer(value, true, ORiN3BinaryConverter::UINT8_MIN, ORiN3BinaryConverter::UINT8_MAX)
                 orin3_value.nullable_uint8_array = O3P::ORiN3NullableUInt8Array.new(raw_value: value.map { |it| O3P::ORiN3NullableUInt8.new(is_null: it.nil?, raw_value: it) })
               # UINT16
               when :ORIN3_UINT16
-                check_integer(value, false, 0, 65535)
+                check_integer(value, false, ORiN3BinaryConverter::UINT16_MIN, ORiN3BinaryConverter::UINT16_MAX)
                 orin3_value.uint16 = O3P::ORiN3UInt16.new(raw_value: value)
               when :ORIN3_UINT16_ARRAY
-                check_array_integer(value, false, 0, 65535)
+                check_array_integer(value, false, ORiN3BinaryConverter::UINT16_MIN, ORiN3BinaryConverter::UINT16_MAX)
                 orin3_value.uint16_array = O3P::ORiN3UInt16Array.new(raw_value: value)
               when :ORIN3_NULLABLE_UINT16
-                check_integer(value, true, 0, 65535)
+                check_integer(value, true, ORiN3BinaryConverter::UINT16_MIN, ORiN3BinaryConverter::UINT16_MAX)
                 orin3_value.nullable_uint16 = O3P::ORiN3NullableUInt16.new(is_null: value.nil?, raw_value: value)
               when :ORIN3_NULLABLE_UINT16_ARRAY
-                check_array_integer(value, true, 0, 65535)
+                check_array_integer(value, true, ORiN3BinaryConverter::UINT16_MIN, ORiN3BinaryConverter::UINT16_MAX)
                 orin3_value.nullable_uint16_array = O3P::ORiN3NullableUInt16Array.new(raw_value: value.map { |it| O3P::ORiN3NullableUInt16.new(is_null: it.nil?, raw_value: it) })
               # UINT32
               when :ORIN3_UINT32
-                check_integer(value, false, 0, 4294967295)
+                check_integer(value, false, ORiN3BinaryConverter::UINT32_MIN, ORiN3BinaryConverter::UINT32_MAX)
                 orin3_value.uint32 = O3P::ORiN3UInt32.new(raw_value: value)
               when :ORIN3_UINT32_ARRAY
-                check_array_integer(value, false, 0, 4294967295)
+                check_array_integer(value, false, ORiN3BinaryConverter::UINT32_MIN, ORiN3BinaryConverter::UINT32_MAX)
                 orin3_value.uint32_array = O3P::ORiN3UInt32Array.new(raw_value: value)
               when :ORIN3_NULLABLE_UINT32
-                check_integer(value, true, 0, 4294967295)
+                check_integer(value, true, ORiN3BinaryConverter::UINT32_MIN, ORiN3BinaryConverter::UINT32_MAX)
                 orin3_value.nullable_uint32 = O3P::ORiN3NullableUInt32.new(is_null: value.nil?, raw_value: value)
               when :ORIN3_NULLABLE_UINT32_ARRAY
-                check_array_integer(value, true, 0, 4294967295)
+                check_array_integer(value, true, ORiN3BinaryConverter::UINT32_MIN, ORiN3BinaryConverter::UINT32_MAX)
                 orin3_value.nullable_uint32_array = O3P::ORiN3NullableUInt32Array.new(raw_value: value.map { |it| O3P::ORiN3NullableUInt32.new(is_null: it.nil?, raw_value: it) })
               # UINT64
               when :ORIN3_UINT64
-                check_integer(value, false, 0, 18446744073709551615)
+                check_integer(value, false, ORiN3BinaryConverter::UINT64_MIN, ORiN3BinaryConverter::UINT64_MAX)
                 orin3_value.uint64 = O3P::ORiN3UInt64.new(raw_value: value)
               when :ORIN3_UINT64_ARRAY
-                check_array_integer(value, false, 0, 18446744073709551615)
+                check_array_integer(value, false, ORiN3BinaryConverter::UINT64_MIN, ORiN3BinaryConverter::UINT64_MAX)
                 orin3_value.uint64_array = O3P::ORiN3UInt64Array.new(raw_value: value)
               when :ORIN3_NULLABLE_UINT64
-                check_integer(value, true, 0, 18446744073709551615)
+                check_integer(value, true, ORiN3BinaryConverter::UINT64_MIN, ORiN3BinaryConverter::UINT64_MAX)
                 orin3_value.nullable_uint64 = O3P::ORiN3NullableUInt64.new(is_null: value.nil?, raw_value: value)
               when :ORIN3_NULLABLE_UINT64_ARRAY
-                check_array_integer(value, true, 0, 18446744073709551615)
+                check_array_integer(value, true, ORiN3BinaryConverter::UINT64_MIN, ORiN3BinaryConverter::UINT64_MAX)
                 orin3_value.nullable_uint64_array = O3P::ORiN3NullableUInt64Array.new(raw_value: value.map { |it| O3P::ORiN3NullableUInt64.new(is_null: it.nil?, raw_value: it) })
               # INT8
               when :ORIN3_INT8
-                check_integer(value, false, -128, 127)
+                check_integer(value, false, ORiN3BinaryConverter::INT8_MIN, ORiN3BinaryConverter::INT8_MAX)
                 orin3_value.int8 = O3P::ORiN3Int8.new(raw_value: value)
               when :ORIN3_INT8_ARRAY
-                check_array_integer(value, false, -128, 127)
+                check_array_integer(value, false, ORiN3BinaryConverter::INT8_MIN, ORiN3BinaryConverter::INT8_MAX)
                 orin3_value.int8_array = O3P::ORiN3Int8Array.new(raw_value: value)
               when :ORIN3_NULLABLE_INT8
-                check_integer(value, true, -128, 127)
+                check_integer(value, true, ORiN3BinaryConverter::INT8_MIN, ORiN3BinaryConverter::INT8_MAX)
                 orin3_value.nullable_int8 = O3P::ORiN3NullableInt8.new(is_null: value.nil?, raw_value: value)
               when :ORIN3_NULLABLE_INT8_ARRAY
-                check_array_integer(value, true, -128, 127)
+                check_array_integer(value, true, ORiN3BinaryConverter::INT8_MIN, ORiN3BinaryConverter::INT8_MAX)
                 orin3_value.nullable_int8_array = O3P::ORiN3NullableInt8Array.new(raw_value: value.map { |it| O3P::ORiN3NullableInt8.new(is_null: it.nil?, raw_value: it) })
               # INT16
               when :ORIN3_INT16
-                check_integer(value, false, -32768, 32767)
+                check_integer(value, false, ORiN3BinaryConverter::INT16_MIN, ORiN3BinaryConverter::INT16_MAX)
                 orin3_value.int16 = O3P::ORiN3Int16.new(raw_value: value)
               when :ORIN3_INT16_ARRAY
-                check_array_integer(value, false, -32768, 32767)
+                check_array_integer(value, false, ORiN3BinaryConverter::INT16_MIN, ORiN3BinaryConverter::INT16_MAX)
                 orin3_value.int16_array = O3P::ORiN3Int16Array.new(raw_value: value)
               when :ORIN3_NULLABLE_INT16
-                check_integer(value, true, -32768, 32767)
+                check_integer(value, true, ORiN3BinaryConverter::INT16_MIN, ORiN3BinaryConverter::INT16_MAX)
                 orin3_value.nullable_int16 = O3P::ORiN3NullableInt16.new(is_null: value.nil?, raw_value: value)
               when :ORIN3_NULLABLE_INT16_ARRAY
-                check_array_integer(value, true, -32768, 32767)
+                check_array_integer(value, true, ORiN3BinaryConverter::INT16_MIN, ORiN3BinaryConverter::INT16_MAX)
                 orin3_value.nullable_int16_array = O3P::ORiN3NullableInt16Array.new(raw_value: value.map { |it| O3P::ORiN3NullableInt16.new(is_null: it.nil?, raw_value: it) })
               # INT32
               when :ORIN3_INT32
-                check_integer(value, false, -2147483648, 2147483647)
+                check_integer(value, false, ORiN3BinaryConverter::INT32_MIN, ORiN3BinaryConverter::INT32_MAX)
                 orin3_value.int32 = O3P::ORiN3Int32.new(raw_value: value)
               when :ORIN3_INT32_ARRAY
-                check_array_integer(value, false, -2147483648, 2147483647)
+                check_array_integer(value, false, ORiN3BinaryConverter::INT32_MIN, ORiN3BinaryConverter::INT32_MAX)
                 orin3_value.int32_array = O3P::ORiN3Int32Array.new(raw_value: value)
               when :ORIN3_NULLABLE_INT32
-                check_integer(value, true, -2147483648, 2147483647)
+                check_integer(value, true, ORiN3BinaryConverter::INT32_MIN, ORiN3BinaryConverter::INT32_MAX)
                 orin3_value.nullable_int32 = O3P::ORiN3NullableInt32.new(is_null: value.nil?, raw_value: value)
               when :ORIN3_NULLABLE_INT32_ARRAY
-                check_array_integer(value, true, -2147483648, 2147483647)
+                check_array_integer(value, true, ORiN3BinaryConverter::INT32_MIN, ORiN3BinaryConverter::INT32_MAX)
                 orin3_value.nullable_int32_array = O3P::ORiN3NullableInt32Array.new(raw_value: value.map { |it| O3P::ORiN3NullableInt32.new(is_null: it.nil?, raw_value: it) })
               # INT64
               when :ORIN3_INT64
-                check_integer(value, false, -9223372036854775808, 9223372036854775807)
+                check_integer(value, false, ORiN3BinaryConverter::INT64_MIN, ORiN3BinaryConverter::INT64_MAX)
                 orin3_value.int64 = O3P::ORiN3Int64.new(raw_value: value)
               when :ORIN3_INT64_ARRAY
-                check_array_integer(value, false, -9223372036854775808, 9223372036854775807)
+                check_array_integer(value, false, ORiN3BinaryConverter::INT64_MIN, ORiN3BinaryConverter::INT64_MAX)
                 orin3_value.int64_array = O3P::ORiN3Int64Array.new(raw_value: value)
               when :ORIN3_NULLABLE_INT64
-                check_integer(value, true, -9223372036854775808, 9223372036854775807)
+                check_integer(value, true, ORiN3BinaryConverter::INT64_MIN, ORiN3BinaryConverter::INT64_MAX)
                 orin3_value.nullable_int64 = O3P::ORiN3NullableInt64.new(is_null: value.nil?, raw_value: value)
               when :ORIN3_NULLABLE_INT64_ARRAY
-                check_array_integer(value, true, -9223372036854775808, 9223372036854775807)
+                check_array_integer(value, true, ORiN3BinaryConverter::INT64_MIN, ORiN3BinaryConverter::INT64_MAX)
                 orin3_value.nullable_int64_array = O3P::ORiN3NullableInt64Array.new(raw_value: value.map { |it| O3P::ORiN3NullableInt64.new(is_null: it.nil?, raw_value: it) })
               # FLOAT
               when :ORIN3_FLOAT
@@ -483,7 +483,7 @@ module Grpc
             end
             value.each do |item|
               if !nullable && item.nil?
-                raise ArgumentError, "Value is nil."
+                raise ArgumentError, "Value contains nil."
               elsif !item.nil?
                 if !item.is_a?(Integer)
                   raise ArgumentError, "Value is not Integer."

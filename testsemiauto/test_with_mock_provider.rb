@@ -606,9 +606,9 @@ class ORiN3ProviderTest < Minitest::Test
         length = data[:value][0].length
         option = {}
         option["Element Count"] = length
-        variable = create_or_get_variable(parent, name, option, data[:type])
+        variable = create_or_get_variable(parent, "test_variable_#{name}", option, data[:type])
       else
-        variable = create_or_get_variable(parent, name, nil, data[:type])
+        variable = create_or_get_variable(parent, "test_variable_#{name}", nil, data[:type])
       end
       data[:value].each do |it|
         variable.set_value(it)
@@ -618,6 +618,271 @@ class ORiN3ProviderTest < Minitest::Test
           assert_equal it, variable.get_value
         end
       end
+    end
+  end
+
+  VARIABLE_RANGE_TEST_DATA = [
+    { name: "ORIN3_UINT8", type: :ORIN3_UINT8, value: [ UINT8_MIN - 1, UINT8_MAX + 1 ] },
+    { name: "ORIN3_UINT16", type: :ORIN3_UINT16, value: [ UINT16_MIN - 1, UINT16_MAX + 1 ] },
+    { name: "ORIN3_UINT32", type: :ORIN3_UINT32, value: [ UINT32_MIN - 1, UINT32_MAX + 1 ] },
+    { name: "ORIN3_UINT64", type: :ORIN3_UINT64, value: [ UINT64_MIN - 1, UINT64_MAX + 1 ] },
+    { name: "ORIN3_INT8", type: :ORIN3_INT8, value: [ INT8_MIN - 1, INT8_MAX + 1 ] },
+    { name: "ORIN3_INT16", type: :ORIN3_INT16, value: [ INT16_MIN - 1, INT16_MAX + 1 ] },
+    { name: "ORIN3_INT32", type: :ORIN3_INT32, value: [ INT32_MIN - 1, INT32_MAX + 1 ] },
+    { name: "ORIN3_INT64", type: :ORIN3_INT64, value: [ INT64_MIN - 1, INT64_MAX + 1 ] },
+
+    { name: "ORIN3_NULLABLE_UINT8", type: :ORIN3_NULLABLE_UINT8, value: [ UINT8_MIN - 1, UINT8_MAX + 1 ] },
+    { name: "ORIN3_NULLABLE_UINT16", type: :ORIN3_NULLABLE_UINT16, value: [ UINT16_MIN - 1, UINT16_MAX + 1 ] },
+    { name: "ORIN3_NULLABLE_UINT32", type: :ORIN3_NULLABLE_UINT32, value: [ UINT32_MIN - 1, UINT32_MAX + 1 ] },
+    { name: "ORIN3_NULLABLE_UINT64", type: :ORIN3_NULLABLE_UINT64, value: [ UINT64_MIN - 1, UINT64_MAX + 1 ] },
+    { name: "ORIN3_NULLABLE_INT8", type: :ORIN3_NULLABLE_INT8, value: [ INT8_MIN - 1, INT8_MAX + 1 ] },
+    { name: "ORIN3_NULLABLE_INT16", type: :ORIN3_NULLABLE_INT16, value: [ INT16_MIN - 1, INT16_MAX + 1 ] },
+    { name: "ORIN3_NULLABLE_INT32", type: :ORIN3_NULLABLE_INT32, value: [ INT32_MIN - 1, INT32_MAX + 1 ] },
+    { name: "ORIN3_NULLABLE_INT64", type: :ORIN3_NULLABLE_INT64, value: [ INT64_MIN - 1, INT64_MAX + 1 ] },
+
+    { name: "ORIN3_UINT8_ARRAY", type: :ORIN3_UINT8_ARRAY, value: [[ UINT8_MIN - 1 ], [ UINT8_MAX + 1 ]] },
+    { name: "ORIN3_UINT16_ARRAY", type: :ORIN3_UINT16_ARRAY, value: [[ UINT16_MIN - 1 ], [ UINT16_MAX + 1 ]] },
+    { name: "ORIN3_UINT32_ARRAY", type: :ORIN3_UINT32_ARRAY, value: [[ UINT32_MIN - 1 ], [ UINT32_MAX + 1 ]] },
+    { name: "ORIN3_UINT64_ARRAY", type: :ORIN3_UINT64_ARRAY, value: [[ UINT64_MIN - 1 ], [ UINT64_MAX + 1 ]] },
+    { name: "ORIN3_INT8_ARRAY", type: :ORIN3_INT8_ARRAY, value: [[ INT8_MIN - 1 ], [ INT8_MAX + 1 ]] },
+    { name: "ORIN3_INT16_ARRAY", type: :ORIN3_INT16_ARRAY, value: [[ INT16_MIN - 1 ], [ INT16_MAX + 1 ]] },
+    { name: "ORIN3_INT32_ARRAY", type: :ORIN3_INT32_ARRAY, value: [[ INT32_MIN - 1 ], [ INT32_MAX + 1 ]] },
+    { name: "ORIN3_INT64_ARRAY", type: :ORIN3_INT64_ARRAY, value: [[ INT64_MIN - 1 ], [ INT64_MAX + 1 ]] },
+
+    { name: "ORIN3_NULLABLE_UINT8_ARRAY", type: :ORIN3_NULLABLE_UINT8_ARRAY, value: [[ UINT8_MIN - 1 ], [ UINT8_MAX + 1 ]] },
+    { name: "ORIN3_NULLABLE_UINT16_ARRAY", type: :ORIN3_NULLABLE_UINT16_ARRAY, value: [[ UINT16_MIN - 1 ], [ UINT16_MAX + 1 ]] },
+    { name: "ORIN3_NULLABLE_UINT32_ARRAY", type: :ORIN3_NULLABLE_UINT32_ARRAY, value: [[ UINT32_MIN - 1 ], [ UINT32_MAX + 1 ]] },
+    { name: "ORIN3_NULLABLE_UINT64_ARRAY", type: :ORIN3_NULLABLE_UINT64_ARRAY, value: [[ UINT64_MIN - 1 ], [ UINT64_MAX + 1 ]] },
+    { name: "ORIN3_NULLABLE_INT8_ARRAY", type: :ORIN3_NULLABLE_INT8_ARRAY, value: [[ INT8_MIN - 1 ], [ INT8_MAX + 1 ]] },
+    { name: "ORIN3_NULLABLE_INT16_ARRAY", type: :ORIN3_NULLABLE_INT16_ARRAY, value: [[ INT16_MIN - 1 ], [ INT16_MAX + 1 ]] },
+    { name: "ORIN3_NULLABLE_INT32_ARRAY", type: :ORIN3_NULLABLE_INT32_ARRAY, value: [[ INT32_MIN - 1 ], [ INT32_MAX + 1 ]] },
+    { name: "ORIN3_NULLABLE_INT64_ARRAY", type: :ORIN3_NULLABLE_INT64_ARRAY, value: [[ INT64_MIN - 1 ], [ INT64_MAX + 1 ]] },
+  ]
+
+  VARIABLE_RANGE_TEST_DATA.each do |data|
+    name = data[:name]
+    define_method("test_variable_range_#{name}") do
+      $logger.info "* test_variable_range_#{name} called."
+      parent = create_or_get_controller("test_variable_range")
+      if two_dimensional_array?(data[:value])
+        length = data[:value][0].length
+        option = {}
+        option["Element Count"] = length
+        variable = create_or_get_variable(parent, "test_variable_range_#{name}", option, data[:type])
+      else
+        variable = create_or_get_variable(parent, "test_variable_range_#{name}", nil, data[:type])
+      end
+      data[:value].each do |it|
+        exception = assert_raises(Grpc::Client::ORiN3::MessageClientError) do
+          variable.set_value(it)
+        end
+        $logger.info "Exception message: #{exception.message}"
+        assert_includes exception.message, "out of range"
+      end
+    end
+  end
+
+  VARIABLE_DATA_TYPE_TEST_DATA = [
+    { name: "ORIN3_BOOL", type: :ORIN3_BOOL, is_array: false, ruby_type: String },
+    { name: "ORIN3_UINT8", type: :ORIN3_UINT8, is_array: false, ruby_type: String },
+    { name: "ORIN3_UINT16", type: :ORIN3_UINT16, is_array: false, ruby_type: String },
+    { name: "ORIN3_UINT32", type: :ORIN3_UINT32, is_array: false, ruby_type: String },
+    { name: "ORIN3_UINT64", type: :ORIN3_UINT64, is_array: false, ruby_type: String },
+    { name: "ORIN3_INT8", type: :ORIN3_INT8, is_array: false, ruby_type: String },
+    { name: "ORIN3_INT16", type: :ORIN3_INT16, is_array: false, ruby_type: String },
+    { name: "ORIN3_INT32", type: :ORIN3_INT32, is_array: false, ruby_type: String },
+    { name: "ORIN3_INT64", type: :ORIN3_INT64, is_array: false, ruby_type: String },
+    { name: "ORIN3_FLOAT", type: :ORIN3_FLOAT, is_array: false, ruby_type: String },
+    { name: "ORIN3_DOUBLE", type: :ORIN3_DOUBLE, is_array: false, ruby_type: String },
+    { name: "ORIN3_DATETIME", type: :ORIN3_DATETIME, is_array: false, ruby_type: String },
+    { name: "ORIN3_STRING", type: :ORIN3_STRING, is_array: false, ruby_type: Time },
+
+    { name: "ORIN3_NULLABLE_BOOL", type: :ORIN3_NULLABLE_BOOL, is_array: false, ruby_type: String },
+    { name: "ORIN3_NULLABLE_UINT8", type: :ORIN3_NULLABLE_UINT8, is_array: false, ruby_type: String },
+    { name: "ORIN3_NULLABLE_UINT16", type: :ORIN3_NULLABLE_UINT16, is_array: false, ruby_type: String },
+    { name: "ORIN3_NULLABLE_UINT32", type: :ORIN3_NULLABLE_UINT32, is_array: false, ruby_type: String },
+    { name: "ORIN3_NULLABLE_UINT64", type: :ORIN3_NULLABLE_UINT64, is_array: false, ruby_type: String },
+    { name: "ORIN3_NULLABLE_INT8", type: :ORIN3_NULLABLE_INT8, is_array: false, ruby_type: String},
+    { name: "ORIN3_NULLABLE_INT16", type: :ORIN3_NULLABLE_INT16, is_array: false, ruby_type: String },
+    { name: "ORIN3_NULLABLE_INT32", type: :ORIN3_NULLABLE_INT32, is_array: false, ruby_type: String },
+    { name: "ORIN3_NULLABLE_INT64", type: :ORIN3_NULLABLE_INT64, is_array: false, ruby_type: String },
+    { name: "ORIN3_NULLABLE_FLOAT", type: :ORIN3_NULLABLE_FLOAT, is_array: false, ruby_type: String },
+    { name: "ORIN3_NULLABLE_DOUBLE", type: :ORIN3_NULLABLE_DOUBLE, is_array: false, ruby_type: String },
+    { name: "ORIN3_NULLABLE_DATETIME", type: :ORIN3_NULLABLE_DATETIME, is_array: false, ruby_type: String },
+
+    { name: "ORIN3_BOOL_ARRAY", type: :ORIN3_BOOL_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_UINT8_ARRAY", type: :ORIN3_UINT8_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_UINT16_ARRAY", type: :ORIN3_UINT16_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_UINT32_ARRAY", type: :ORIN3_UINT32_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_UINT64_ARRAY", type: :ORIN3_UINT64_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_INT8_ARRAY", type: :ORIN3_INT8_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_INT16_ARRAY", type: :ORIN3_INT16_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_INT32_ARRAY", type: :ORIN3_INT32_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_INT64_ARRAY", type: :ORIN3_INT64_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_FLOAT_ARRAY", type: :ORIN3_FLOAT_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_DOUBLE_ARRAY", type: :ORIN3_DOUBLE_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_DATETIME_ARRAY", type: :ORIN3_DATETIME_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_STRING_ARRAY", type: :ORIN3_STRING_ARRAY, is_array: true, ruby_type: Time},
+
+    { name: "ORIN3_NULLABLE_BOOL_ARRAY", type: :ORIN3_NULLABLE_BOOL_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_NULLABLE_UINT8_ARRAY", type: :ORIN3_NULLABLE_UINT8_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_NULLABLE_UINT16_ARRAY", type: :ORIN3_NULLABLE_UINT16_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_NULLABLE_UINT32_ARRAY", type: :ORIN3_NULLABLE_UINT32_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_NULLABLE_UINT64_ARRAY", type: :ORIN3_NULLABLE_UINT64_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_NULLABLE_INT8_ARRAY", type: :ORIN3_NULLABLE_INT8_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_NULLABLE_INT16_ARRAY", type: :ORIN3_NULLABLE_INT16_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_NULLABLE_INT32_ARRAY", type: :ORIN3_NULLABLE_INT32_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_NULLABLE_INT64_ARRAY", type: :ORIN3_NULLABLE_INT64_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_NULLABLE_FLOAT_ARRAY", type: :ORIN3_NULLABLE_INT64_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_NULLABLE_DOUBLE_ARRAY", type: :ORIN3_NULLABLE_INT64_ARRAY, is_array: true, ruby_type: String },
+    { name: "ORIN3_NULLABLE_DATETIME_ARRAY", type: :ORIN3_NULLABLE_INT64_ARRAY, is_array: true, ruby_type: String },
+  ]
+
+  VARIABLE_DATA_TYPE_TEST_DATA.each do |data|
+    name = data[:name]
+    define_method("test_variable_data_type_#{name}") do
+      $logger.info "* test_variable_data_type_#{name} called."
+      parent = create_or_get_controller("test_variable_data_type")
+      variable = create_or_get_variable(parent, "test_variable_data_type_#{name}", nil, data[:type])
+      exception = assert_raises(Grpc::Client::ORiN3::MessageClientError) do
+        if data[:is_array]
+          variable.set_value([data[:ruby_type].new])
+        else
+          variable.set_value(data[:ruby_type].new)
+        end
+      end
+      $logger.info "Exception message: #{exception.message}"
+      assert_includes exception.message, "Value is not"
+    end
+  end
+
+  VARIABLE_NIL_TEST_DATA = [
+    { name: "ORIN3_BOOL", type: :ORIN3_BOOL },
+    { name: "ORIN3_UINT8", type: :ORIN3_UINT8 },
+    { name: "ORIN3_UINT16", type: :ORIN3_UINT16 },
+    { name: "ORIN3_UINT32", type: :ORIN3_UINT32 },
+    { name: "ORIN3_UINT64", type: :ORIN3_UINT64 },
+    { name: "ORIN3_INT8", type: :ORIN3_INT8 },
+    { name: "ORIN3_INT16", type: :ORIN3_INT16 },
+    { name: "ORIN3_INT32", type: :ORIN3_INT32 },
+    { name: "ORIN3_INT64", type: :ORIN3_INT64 },
+    { name: "ORIN3_FLOAT", type: :ORIN3_FLOAT },
+    { name: "ORIN3_DOUBLE", type: :ORIN3_DOUBLE },
+    { name: "ORIN3_DATETIME", type: :ORIN3_DATETIME },
+
+    { name: "ORIN3_BOOL_ARRAY", type: :ORIN3_BOOL_ARRAY },
+    { name: "ORIN3_UINT8_ARRAY", type: :ORIN3_UINT8_ARRAY },
+    { name: "ORIN3_UINT16_ARRAY", type: :ORIN3_UINT16_ARRAY },
+    { name: "ORIN3_UINT32_ARRAY", type: :ORIN3_UINT32_ARRAY },
+    { name: "ORIN3_UINT64_ARRAY", type: :ORIN3_UINT64_ARRAY },
+    { name: "ORIN3_INT8_ARRAY", type: :ORIN3_INT8_ARRAY },
+    { name: "ORIN3_INT16_ARRAY", type: :ORIN3_INT16_ARRAY },
+    { name: "ORIN3_INT32_ARRAY", type: :ORIN3_INT32_ARRAY },
+    { name: "ORIN3_INT64_ARRAY", type: :ORIN3_INT64_ARRAY },
+    { name: "ORIN3_FLOAT_ARRAY", type: :ORIN3_FLOAT_ARRAY },
+    { name: "ORIN3_DOUBLE_ARRAY", type: :ORIN3_DOUBLE_ARRAY },
+    { name: "ORIN3_DATETIME_ARRAY", type: :ORIN3_DATETIME_ARRAY },
+    { name: "ORIN3_STRING_ARRAY", type: :ORIN3_STRING_ARRAY },
+
+    { name: "ORIN3_NULLABLE_BOOL_ARRAY", type: :ORIN3_NULLABLE_BOOL_ARRAY },
+    { name: "ORIN3_NULLABLE_UINT8_ARRAY", type: :ORIN3_NULLABLE_UINT8_ARRAY },
+    { name: "ORIN3_NULLABLE_UINT16_ARRAY", type: :ORIN3_NULLABLE_UINT16_ARRAY },
+    { name: "ORIN3_NULLABLE_UINT32_ARRAY", type: :ORIN3_NULLABLE_UINT32_ARRAY },
+    { name: "ORIN3_NULLABLE_UINT64_ARRAY", type: :ORIN3_NULLABLE_UINT64_ARRAY },
+    { name: "ORIN3_NULLABLE_INT8_ARRAY", type: :ORIN3_NULLABLE_INT8_ARRAY },
+    { name: "ORIN3_NULLABLE_INT16_ARRAY", type: :ORIN3_NULLABLE_INT16_ARRAY },
+    { name: "ORIN3_NULLABLE_INT32_ARRAY", type: :ORIN3_NULLABLE_INT32_ARRAY },
+    { name: "ORIN3_NULLABLE_INT64_ARRAY", type: :ORIN3_NULLABLE_INT64_ARRAY },
+    { name: "ORIN3_NULLABLE_FLOAT_ARRAY", type: :ORIN3_NULLABLE_INT64_ARRAY },
+    { name: "ORIN3_NULLABLE_DOUBLE_ARRAY", type: :ORIN3_NULLABLE_INT64_ARRAY },
+    { name: "ORIN3_NULLABLE_DATETIME_ARRAY", type: :ORIN3_NULLABLE_INT64_ARRAY },
+    { name: "ORIN3_NULLABLE_STRING_ARRAY", type: :ORIN3_NULLABLE_INT64_ARRAY },
+  ]
+
+  VARIABLE_NIL_TEST_DATA.each do |data|
+    name = data[:name]
+    define_method("test_variable_nil_#{name}") do
+      $logger.info "* test_variable_nil_#{name} called."
+      parent = create_or_get_controller("test_variable_nil_data")
+      variable = create_or_get_variable(parent, "test_variable_nil_#{name}", nil, data[:type])
+      exception = assert_raises(Grpc::Client::ORiN3::MessageClientError) do
+        variable.set_value(nil)
+      end
+      $logger.info "Exception message: #{exception.message}"
+      assert_includes exception.message, "Value is nil"
+    end
+  end
+
+  VARIABLE_NIL2_TEST_DATA = [
+    { name: "ORIN3_BOOL_ARRAY", type: :ORIN3_BOOL_ARRAY },
+    { name: "ORIN3_UINT8_ARRAY", type: :ORIN3_UINT8_ARRAY },
+    { name: "ORIN3_UINT16_ARRAY", type: :ORIN3_UINT16_ARRAY },
+    { name: "ORIN3_UINT32_ARRAY", type: :ORIN3_UINT32_ARRAY },
+    { name: "ORIN3_UINT64_ARRAY", type: :ORIN3_UINT64_ARRAY },
+    { name: "ORIN3_INT8_ARRAY", type: :ORIN3_INT8_ARRAY },
+    { name: "ORIN3_INT16_ARRAY", type: :ORIN3_INT16_ARRAY },
+    { name: "ORIN3_INT32_ARRAY", type: :ORIN3_INT32_ARRAY },
+    { name: "ORIN3_INT64_ARRAY", type: :ORIN3_INT64_ARRAY },
+    { name: "ORIN3_FLOAT_ARRAY", type: :ORIN3_FLOAT_ARRAY },
+    { name: "ORIN3_DOUBLE_ARRAY", type: :ORIN3_DOUBLE_ARRAY },
+    { name: "ORIN3_DATETIME_ARRAY", type: :ORIN3_DATETIME_ARRAY },
+  ]
+
+  VARIABLE_NIL2_TEST_DATA.each do |data|
+    name = data[:name]
+    define_method("test_variable_nil2_#{name}") do
+      $logger.info "* test_variable_nil2_#{name} called."
+      parent = create_or_get_controller("test_variable_nil2_data")
+      variable = create_or_get_variable(parent, "test_variable_nil2_#{name}", nil, data[:type])
+      exception = assert_raises(Grpc::Client::ORiN3::MessageClientError) do
+        variable.set_value([ nil ])
+      end
+      $logger.info "Exception message: #{exception.message}"
+      assert_includes exception.message, "Value contains nil."
+    end
+  end
+
+  VARIABLE_ARRAY_TEST_DATA = [
+    { name: "ORIN3_BOOL_ARRAY", type: :ORIN3_BOOL_ARRAY },
+    { name: "ORIN3_UINT8_ARRAY", type: :ORIN3_UINT8_ARRAY },
+    { name: "ORIN3_UINT16_ARRAY", type: :ORIN3_UINT16_ARRAY },
+    { name: "ORIN3_UINT32_ARRAY", type: :ORIN3_UINT32_ARRAY },
+    { name: "ORIN3_UINT64_ARRAY", type: :ORIN3_UINT64_ARRAY },
+    { name: "ORIN3_INT8_ARRAY", type: :ORIN3_INT8_ARRAY },
+    { name: "ORIN3_INT16_ARRAY", type: :ORIN3_INT16_ARRAY },
+    { name: "ORIN3_INT32_ARRAY", type: :ORIN3_INT32_ARRAY },
+    { name: "ORIN3_INT64_ARRAY", type: :ORIN3_INT64_ARRAY },
+    { name: "ORIN3_FLOAT_ARRAY", type: :ORIN3_FLOAT_ARRAY },
+    { name: "ORIN3_DOUBLE_ARRAY", type: :ORIN3_DOUBLE_ARRAY },
+    { name: "ORIN3_DATETIME_ARRAY", type: :ORIN3_DATETIME_ARRAY },
+    { name: "ORIN3_STRING_ARRAY", type: :ORIN3_STRING_ARRAY },
+
+    { name: "ORIN3_NULLABLE_BOOL_ARRAY", type: :ORIN3_NULLABLE_BOOL_ARRAY },
+    { name: "ORIN3_NULLABLE_UINT8_ARRAY", type: :ORIN3_NULLABLE_UINT8_ARRAY },
+    { name: "ORIN3_NULLABLE_UINT16_ARRAY", type: :ORIN3_NULLABLE_UINT16_ARRAY },
+    { name: "ORIN3_NULLABLE_UINT32_ARRAY", type: :ORIN3_NULLABLE_UINT32_ARRAY },
+    { name: "ORIN3_NULLABLE_UINT64_ARRAY", type: :ORIN3_NULLABLE_UINT64_ARRAY },
+    { name: "ORIN3_NULLABLE_INT8_ARRAY", type: :ORIN3_NULLABLE_INT8_ARRAY },
+    { name: "ORIN3_NULLABLE_INT16_ARRAY", type: :ORIN3_NULLABLE_INT16_ARRAY },
+    { name: "ORIN3_NULLABLE_INT32_ARRAY", type: :ORIN3_NULLABLE_INT32_ARRAY },
+    { name: "ORIN3_NULLABLE_INT64_ARRAY", type: :ORIN3_NULLABLE_INT64_ARRAY },
+    { name: "ORIN3_NULLABLE_FLOAT_ARRAY", type: :ORIN3_NULLABLE_INT64_ARRAY },
+    { name: "ORIN3_NULLABLE_DOUBLE_ARRAY", type: :ORIN3_NULLABLE_INT64_ARRAY },
+    { name: "ORIN3_NULLABLE_DATETIME_ARRAY", type: :ORIN3_NULLABLE_INT64_ARRAY },
+    { name: "ORIN3_NULLABLE_STRING_ARRAY", type: :ORIN3_NULLABLE_INT64_ARRAY },
+  ]
+
+  VARIABLE_ARRAY_TEST_DATA.each do |data|
+    name = data[:name]
+    define_method("test_variable_array_#{name}") do
+      $logger.info "* test_variable_array_#{name} called."
+      parent = create_or_get_controller("test_variable_array_data")
+      variable = create_or_get_variable(parent, "test_variable_array_#{name}", nil, data[:type])
+      exception = assert_raises(Grpc::Client::ORiN3::MessageClientError) do
+        variable.set_value(0)
+      end
+      $logger.info "Exception message: #{exception.message}"
+      assert_includes exception.message, "Value is not Array."
     end
   end
 
