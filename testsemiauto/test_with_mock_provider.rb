@@ -27,7 +27,7 @@ class ORiN3ProviderTest < Minitest::Test
 
     $logger.info "* wakeup mock provider."
     id = "643D12C8-DCFC-476C-AA15-E8CA004F48E8"
-    @version = "1.0.84-beta.8"
+    @version = "[1.0.0,2.0.0)"
     channel = GRPC::Core::Channel.new("localhost:7103", nil, :this_channel_is_insecure)
     remote_engine = ORiN3::RemoteEngine.new(channel)
     result = remote_engine.wakeup_provider(id, @version, "0.0.0.0", 0)
@@ -80,7 +80,7 @@ class ORiN3ProviderTest < Minitest::Test
     end
     controller = @root.create_controller(name,
       "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Controller.GeneralPurposeController, ORiN3.Provider.ORiNConsortium.Mock",
-      "{ \"@Version\":\"#{@version}\" }")
+      "{ \"@Version\":\"1.0.0\" }")
     $logger.info "Controller created. [name=#{controller.name}]"
     @controllers[name] = controller
     return controller
@@ -90,7 +90,7 @@ class ORiN3ProviderTest < Minitest::Test
     if @variables.key?(name)
       return @variables[name]
     end
-    option_string = "{ \"@Version\":\"#{@version}\" }"
+    option_string = "{ \"@Version\":\"1.0.0\" }"
     if !option.nil?
       parsed_data = JSON.parse(option_string)
       # 動的に要素を追加
@@ -884,6 +884,20 @@ class ORiN3ProviderTest < Minitest::Test
       $logger.info "Exception message: #{exception.message}"
       assert_includes exception.message, "Value is not Array."
     end
+  end
+
+  def test_dictionary
+    $logger.info "* test_dictionary called."
+    controller = create_or_get_controller("test_dictionary")
+    controller.connect
+    job = controller.create_job("job",
+      "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Job.DataRegenerationJob, ORiN3.Provider.ORiNConsortium.Mock",
+      "{ \"@Version\":\"1.0.0\", \"Path\":\".\\CsvData.csv\", \"Interval\":500  }")
+    job.start({ "RepeatCount" => ORiN3BinaryConverter.serialize(3, ORiN3BinaryConverter::DataType::Int32) })
+    puts job.get_standard_output
+    puts job.get_standard_error
+    job.stop
+    puts job.get_result
   end
 
   def two_dimensional_array?(target)

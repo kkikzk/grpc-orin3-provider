@@ -93,7 +93,7 @@ class ORiN3BinaryConverter
         return self.serialize_core(data, ORiN3BinaryConverter::DataType::Bool)
       when String
         return self.serialize_core(data, ORiN3BinaryConverter::DataType::String)
-      when Time, DateTime
+      when Time
         return self.serialize_core(data, ORiN3BinaryConverter::DataType::DateTime)
       when Array
         if data.all? { |item| item.is_a?(TrueClass) || item.is_a?(FalseClass) }
@@ -113,6 +113,8 @@ class ORiN3BinaryConverter
         else
           raise ArgumentError, "Unsupported data type"
         end
+      when Hash
+        return self.serialize_core(data, ORiN3BinaryConverter::DataType::Dictionary)
       else
         raise ArgumentError, "Unsupported data type"
       end
@@ -375,6 +377,34 @@ class ORiN3BinaryConverter
     end
   end
 
+  def self.from_dictionary_to_binary(data)
+    length_data = data.map do |key, value|
+      5 + key.bytes.length + value.length
+    end
+    length = length_data.sum
+    byte_array = Array.new(length + 4, 0)
+    byte_array[0..3] = [data.keys.length].pack('l<').bytes
+    index = 4
+    data.each do |key, value|
+      string_bytes = key.bytes
+      byte_array[index] = ORiN3BinaryConverter::DataType::String
+      byte_array[(index + 1)..(index + 4)] = [string_bytes.length].pack('L').bytes
+      
+      # キーのバイト配列を追加
+      byte_array[(index + 5)..(index + 5 + string_bytes.length - 1)] = string_bytes
+      
+      index += 5 + string_bytes.length
+      # 値がバイナリデータの場合、バイト配列として追加する
+      if value.is_a?(String)
+        byte_array[index..(index + value.bytes.length - 1)] = value.bytes
+        index += value.bytes.length
+      else
+        raise ArgumentError, "Value is not a valid binary string."
+      end
+    end
+    return byte_array.pack('C*')
+  end
+
   private
   def self.serialize_core(data, type)
     case type
@@ -520,6 +550,46 @@ class ORiN3BinaryConverter
       serialize_array_no_range([ Float ], data, type, 8) { |item| [item].pack('E').bytes }
     when ORiN3BinaryConverter::DataType::NullableDateTimeArray
       serialize_array_no_range([ Time ], data, type, 8) { |item| [Grpc::ORiN3::Provider::DateTimeConverter.to_int64(item)].pack('q<').bytes }
+    # when ORiN3BinaryConverter::DataType::Dictionary
+    #   if data.nil?
+    #     raise ArgumentError, "Value is nil."
+    #   elsif !data.is_a?(Hash)
+    #     raise ArgumentError, "Value is not Hash."
+    #   end
+    #   # data.each do |item|
+    #   #   if !item.nil? && (!item.is_a?(TrueClass) && !item.is_a?(FalseClass))
+    #   #     raise ArgumentError, "Value is not #{String}."
+    #   #   end
+    #   # end
+    #   length_data = data.map do |key, value|
+    #     5 + key.bytes.length + value.length
+    #   end
+    #   length = length_data.sum
+    #   byte_array = Array.new(length + 9, 0)
+    #   byte_array[0] = ORiN3BinaryConverter::DataType::Dictionary
+    #   byte_array[1..4] = [length].pack('l<').bytes
+    #   byte_array[5..8] = [data.keys.length].pack('l<').bytes
+    #   index = 9
+    #   data.each do |key, value|
+    #     string_bytes = key.bytes
+    #     byte_array[index] = ORiN3BinaryConverter::DataType::String
+    #     byte_array[(index + 1)..(index + 4)] = [string_bytes.length].pack('L').bytes
+        
+    #     # キーのバイト配列を追加
+    #     byte_array[(index + 5)..(index + 5 + string_bytes.length - 1)] = string_bytes
+        
+    #     index += 5 + string_bytes.length
+        
+    #     # 値がバイナリデータの場合、バイト配列として追加する
+    #     if value.is_a?(String)
+    #       byte_array[index..(index + value.bytes.length - 1)] = value.bytes
+    #       index += value.bytes.length
+    #     else
+    #       raise ArgumentError, "Value is not a valid binary string."
+    #     end
+    #   end
+    #   puts "byte_array=#{byte_array}"
+    #   return byte_array.pack('C*')
     else
       raise ArgumentError, "Unsupported data type"
     end
