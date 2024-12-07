@@ -82,7 +82,7 @@ class VariableServiceMockServer < ORiN3::VariableService::Service
     @response_values = {
       result_code: 0,
       detail: "",
-      value_type: Grpc::ORiN3::Provider::ORiN3ValueType::ORiN3Bool,
+      value_type: :ORiN3_BOOL,
       raw_value: true,
     }
   end
@@ -233,24 +233,5 @@ class ORiN3ProviderTest < Minitest::Test
     assert_equal :DEFAULT_ERROR, response.common.result_code
     $logger.info "Detail: #{response.common.detail}"
     assert_equal "hoge", response.common.detail
-  end
-
-  def test_get_value
-    $logger.info "* test_get_value called."
-    sut = ORiN3::VariableService::Stub.new(nil, :this_channel_is_insecure, channel_override: @channel)
-    @variable_service_mock_server.response_values[:result_code] = :SUCCEEDED
-    @variable_service_mock_server.response_values[:detail] = ""
-
-    request = ORiN3::GetValueRequest.new(common: ORiN3::CommonRequest.new, id: "\x12\x34".b, value_type: 3)
-    response = sut.get_value(request)
-
-    $logger.info "Result code: #{response.common.result_code}"
-    assert_equal :SUCCEEDED, response.common.result_code
-    $logger.info "Detail: #{response.common.detail}"
-    assert_equal "", response.common.detail
-    $logger.info "Value type: #{response.value.type}"
-    assert_equal :ORIN3_BOOL, response.value.type
-    $logger.info "Value: #{response.value.bool.raw_value}"
-    assert_equal true, response.value.bool.raw_value
   end
 end

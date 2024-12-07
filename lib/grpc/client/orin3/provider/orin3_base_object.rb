@@ -35,7 +35,7 @@ module Grpc
               @type_name = response.type_name
               @option = response.option
               @created_datetime = Grpc::ORiN3::Provider::DateTimeConverter.from_int64(response.created_datetime)
-              @orin3_object_type = Grpc::ORiN3::Provider::ORiN3ObjectType.from_i(response.object_type)
+              @orin3_object_type = response.object_type
               @extra = response.extra
             rescue MessageClientError
               raise

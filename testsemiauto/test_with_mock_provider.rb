@@ -162,6 +162,7 @@ class ORiN3ProviderTest < Minitest::Test
     $logger.info "Variable.option: #{variable.option}"
     $logger.info "Variable.created_datetime: #{variable.created_datetime.getlocal}"
     $logger.info "Variable.orin3_object_type: #{variable.orin3_object_type}"
+    $logger.info "Variable.value_type: #{variable.value_type}"
     $logger.info "Variable.id: #{variable.id}"
     return variable
   end
@@ -893,7 +894,7 @@ class ORiN3ProviderTest < Minitest::Test
     controller.connect
     job = controller.create_job("job",
       "ORiN3.Provider.ORiNConsortium.Mock.O3Object.Job.DataRegenerationJob, ORiN3.Provider.ORiNConsortium.Mock",
-      "{ \"@Version\":\"1.0.0\", \"Path\":\".\\CsvData.csv\", \"Interval\":500  }")
+      "{ \"@Version\":\"1.0.0\", \"Interval\":500  }")
     job.start({ "RepeatCount" => ORiN3BinaryConverter.serialize(3, ORiN3BinaryConverter::DataType::Int32) })
     puts job.get_standard_output
     puts job.get_standard_error

@@ -1,7 +1,5 @@
 require_relative "provider/version"
 require_relative "provider/date_time_converter"
-require_relative "provider/orin3_object_type"
-require_relative "provider/orin3_value_type"
 require_relative "../client/orin3/remoteengine/orin3_remote_engine"
 require_relative "../client/orin3/provider/orin3_base_object"
 require_relative "../client/orin3/provider/orin3_root_object"
@@ -11,6 +9,7 @@ require_relative "../client/orin3/provider/orin3_job"
 require_relative "../client/orin3/provider/orin3_variable"
 require_relative "../client/orin3/provider/orin3_file"
 require_relative "../client/orin3/provider/orin3_module"
+require_relative "../client/orin3/provider/orin3_stream"
 require_relative '../../../gen/Design.ORiN3.Common/V1/orin3_common_pb'
 require_relative '../../../gen/Design.ORiN3.Common/V1/orin3_common_remote_engine_pb'
 require_relative '../../../gen/Message.ORiN3.RemoteEngine/V1/orin3_remote_engine_pb'

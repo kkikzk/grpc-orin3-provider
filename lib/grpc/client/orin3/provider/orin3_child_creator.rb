@@ -65,6 +65,38 @@ module Grpc
               raise MessageClientError.new(e)
             end  
           end
+
+          def create_stream(name, type_name, option)
+            begin
+              controller = O3::ChildCreatorService::Stub.new(nil, :this_channel_is_insecure, channel_override: @channel)
+              request = O3::CreateStreamRequest.new(common: O3P::CommonRequest.new, parent_id: @internal_id, name: name, type_name: type_name, option: option)
+              response = controller.create_stream(request)
+              if (response.common.result_code != :SUCCEEDED)
+                raise MessageClientError.new(response.common.result_code, response.common.detail)
+              end
+              return ORiN3Stream.new(@channel, response.stream_id, response.created_datetime)
+            rescue MessageClientError
+              raise
+            rescue StandardError => e
+              raise MessageClientError.new(e)
+            end  
+          end
+
+          def create_module(name, type_name, option)
+            begin
+              controller = O3::ChildCreatorService::Stub.new(nil, :this_channel_is_insecure, channel_override: @channel)
+              request = O3::CreateModuleRequest.new(common: O3P::CommonRequest.new, parent_id: @internal_id, name: name, type_name: type_name, option: option)
+              response = controller.create_module(request)
+              if (response.common.result_code != :SUCCEEDED)
+                raise MessageClientError.new(response.common.result_code, response.common.detail)
+              end
+              return ORiN3Module.new(@channel, response.module_id, response.created_datetime)
+            rescue MessageClientError
+              raise
+            rescue StandardError => e
+              raise MessageClientError.new(e)
+            end  
+          end
         end
       end
     end

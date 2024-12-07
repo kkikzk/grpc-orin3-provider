@@ -15,7 +15,7 @@ module Grpc
   module Client
     module ORiN3
       module Provider
-        class ORiNModule < ORiN3BaseObject
+        class ORiN3Module < ORiN3BaseObject
           attr_reader :created_datetime
           include ORiN3ChildCreator
 

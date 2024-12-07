@@ -268,19 +268,19 @@ class ORiN3ProviderTest < Minitest::Test
     $logger.info "* test_float called."
     do_test(Float::INFINITY, [ 38, 0, 0, 128, 127 ], ORiN3BinaryConverter::DataType::Float)
     do_test(-Float::INFINITY, [ 38, 0, 0, 128, 255 ], ORiN3BinaryConverter::DataType::Float)
-    do_test(0, [ 38, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::Float)
-    do_test(1, [ 38, 0, 0, 0x80, 0x3F ], ORiN3BinaryConverter::DataType::Float)
+    do_test(0.0, [ 38, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::Float)
+    do_test(1.0, [ 38, 0, 0, 0x80, 0x3F ], ORiN3BinaryConverter::DataType::Float)
   end
 
   def test_float_array
     $logger.info "* test_float_array called."
-    do_test([ Float::INFINITY, -Float::INFINITY, 0, 1 ], [ 39, 4, 0, 0, 0, 0, 0, 128, 127, 0, 0, 128, 255, 0, 0, 0, 0, 0, 0, 0x80, 0x3F ], ORiN3BinaryConverter::DataType::FloatArray)
+    do_test([ Float::INFINITY, -Float::INFINITY, 0.0, 1.0 ], [ 39, 4, 0, 0, 0, 0, 0, 128, 127, 0, 0, 128, 255, 0, 0, 0, 0, 0, 0, 0x80, 0x3F ], ORiN3BinaryConverter::DataType::FloatArray)
   end
 
   def test_nullable_float_array
     $logger.info "* test_nullable_float_array called."
     do_test([ nil ], [ 41, 1, 0, 0, 0, 0, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::NullableFloatArray)
-    do_test([ Float::INFINITY, -Float::INFINITY, 0, nil, 1 ], [ 41, 5, 0, 0, 0, 1, 0, 0, 128, 127, 1, 0, 0, 128, 255, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0x80, 0x3F ], ORiN3BinaryConverter::DataType::NullableFloatArray)
+    do_test([ Float::INFINITY, -Float::INFINITY, 0.0, nil, 1.0 ], [ 41, 5, 0, 0, 0, 1, 0, 0, 128, 127, 1, 0, 0, 128, 255, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0x80, 0x3F ], ORiN3BinaryConverter::DataType::NullableFloatArray)
   end
 
   def test_double
@@ -289,8 +289,8 @@ class ORiN3ProviderTest < Minitest::Test
     do_test(1.7976931348623157e+308, [42, 255, 255, 255, 255, 255, 255, 239, 127 ], ORiN3BinaryConverter::DataType::Double)
     do_test(Float::INFINITY, [42, 0, 0, 0, 0, 0, 0, 240, 127 ], ORiN3BinaryConverter::DataType::Double)
     do_test(-Float::INFINITY, [42, 0, 0, 0, 0, 0, 0, 240, 255 ], ORiN3BinaryConverter::DataType::Double)
-    do_test(1, [42, 0, 0, 0, 0, 0, 0, 240, 63 ], ORiN3BinaryConverter::DataType::Double)
-    do_test(0, [ 42, 0, 0, 0, 0, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::Double)
+    do_test(1.0, [ 42, 0, 0, 0, 0, 0, 0, 240, 63 ], ORiN3BinaryConverter::DataType::Double)
+    do_test(0.0, [ 42, 0, 0, 0, 0, 0, 0, 0, 0 ], ORiN3BinaryConverter::DataType::Double)
   end
 
   def test_double_array

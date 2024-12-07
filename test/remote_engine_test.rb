@@ -52,7 +52,9 @@ class RemoteEngineMockServer < ORiN3::RemoteEngineService::Service
     def wakeup_provider(request, _call)
       $logger.info "* wakeup_provider called."
       common = ORiN3::CommonResponse.new(result_code: response_values[:result_code], detail: response_values[:detail])
-      return ORiN3::WakeupProviderResponse.new(common: common)
+      endpoint = ORiN3::ProviderEndpoint.new(index: 0, ip_address: "127.0.0.1", port: 1234, uri: "http://127.0.0.1:1234", protocol_type: 0)
+      info = ORiN3::ProviderInformation.new(endpoints: [ endpoint ])
+      return ORiN3::WakeupProviderResponse.new(common: common, provider_information: info)
     end
 
     def terminate_provider(request, _call)
@@ -150,6 +152,8 @@ class RemoteEngineTest < Minitest::Test
   def test_wakeup_provider
     # arrange
     $logger.info "* test_wakeup_provider called."
+    @remote_engine_mock_server.response_values[:result_code] = :SUCCEEDED
+    @remote_engine_mock_server.response_values[:detail] = "hoge"
 
     id = "643D12C8-DCFC-476C-AA15-E8CA004F48E8"
     #id = [uuid_str.delete('-')].pack('H*').force_encoding('UTF-8')
@@ -217,7 +221,7 @@ class RemoteEngineTest < Minitest::Test
     rescue ORiN3::MessageClientError => e
       # assert
       $logger.info "Result code: #{e.result_code}"
-      assert_equal :UNKNOUN, e.result_code
+      assert_equal :UNKNOWN, e.result_code
       $logger.info "Detail: #{e.detail}"
       #assert_equal "hoge", e.detail
     else

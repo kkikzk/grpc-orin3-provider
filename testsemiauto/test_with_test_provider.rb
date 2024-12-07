@@ -95,50 +95,52 @@ class ORiN3ProviderTest2 < Minitest::Test
       "ORiN3.Provider.Core.ForTestProvider.ORiN3Object.ForTestFile, ORiN3.Provider.Core.ForTestProvider",
       "{ \"@Version\":\"1.0.0\", \"Path\":\"#{full_path}\" }")
 
+    $logger.info "aaa=#{file.orin3_object_type}"
+
     # get_length
     length = file.get_length
-    puts "File length: #{length}"
+    $logger.info "File length: #{length}"
     assert_equal 10, length
 
     # read
     total_read = 0
     file.read do |buffer|
-      puts "buffer: #{buffer}"
+      $logger.info "buffer: #{buffer}"
       assert_equal "1234567890", buffer
       total_read += buffer.size
     end
-    puts "Total bytes read: #{total_read}"
+    $logger.info "Total bytes read: #{total_read}"
     assert_equal length, total_read
 
     # seek
     total_read = 0
     file.seek(4)
     file.read do |buffer|
-      puts "buffer: #{buffer}"
+      $logger.info "buffer: #{buffer}"
       assert_equal "567890", buffer
       total_read += buffer.size
     end
-    puts "Total bytes read after seek: #{total_read}"
+    $logger.info "Total bytes read after seek: #{total_read}"
     assert_equal 6, total_read
 
     total_read = 0
     file.seek(-4, :END)
     file.read do |buffer|
-      puts "buffer: #{buffer}"
+      $logger.info "buffer: #{buffer}"
       assert_equal "7890", buffer
       total_read += buffer.size
     end
-    puts "Total bytes read after seek: #{total_read}"
+    $logger.info "Total bytes read after seek: #{total_read}"
     assert_equal 4, total_read
 
     total_read = 0
     file.seek(-2, :CURRENT)
     file.read do |buffer|
-      puts "buffer: #{buffer}"
+      $logger.info "buffer: #{buffer}"
       assert_equal "90", buffer
       total_read += buffer.size
     end
-    puts "Total bytes read after seek: #{total_read}"
+    $logger.info "Total bytes read after seek: #{total_read}"
     assert_equal 2, total_read
 
     # set_length
@@ -152,11 +154,11 @@ class ORiN3ProviderTest2 < Minitest::Test
     total_read = 0
     file.seek(0)
     file.read do |buffer|
-      puts "buffer: #{buffer}"
+      $logger.info "buffer: #{buffer}"
       assert_equal "12345678909876543210", buffer
       total_read += buffer.size
     end
-    puts "Total bytes read after seek: #{total_read}"
+    $logger.info "Total bytes read after seek: #{total_read}"
     assert_equal 20, total_read
 
     file.set_length(10)
@@ -164,5 +166,35 @@ class ORiN3ProviderTest2 < Minitest::Test
     # can_read, can_write
     assert_equal true, file.can_read
     assert_equal true, file.can_write
+  end
+
+  def test_stream
+    $logger.info "* test_stream called."
+    controller = create_or_get_controller("test_stream")
+    stream = controller.create_stream("stream",
+      "ORiN3.Provider.Core.ForTestProvider.ORiN3Object.ForTestStream, ORiN3.Provider.Core.ForTestProvider",
+      "{ \"@Version\":\"1.0.0\" }")
+    
+    stream.read do |value|
+      $logger.info "Received value: #{value}"
+    end
+  end
+
+  def test_module
+    $logger.info "* test_module called."
+    controller = create_or_get_controller("test_module")
+    orin3_module = controller.create_module("module",
+      "ORiN3.Provider.Core.ForTestProvider.ORiN3Object.ForTestModule, ORiN3.Provider.Core.ForTestProvider",
+      "{ \"@Version\":\"1.0.0\" }")
+
+    $logger.info "Module.name: #{orin3_module.name}"
+    $logger.info "Module.type_name: #{orin3_module.type_name}"
+    $logger.info "Module.option: #{orin3_module.option}"
+    $logger.info "Module.created_datetime: #{orin3_module.created_datetime.getlocal}"
+    $logger.info "Module.orin3_object_type: #{orin3_module.orin3_object_type}"
+    $logger.info "Module.id: #{orin3_module.id}"
+    assert_equal "module", orin3_module.name
+    assert_equal "ORiN3.Provider.Core.ForTestProvider.ORiN3Object.ForTestModule, ORiN3.Provider.Core.ForTestProvider", orin3_module.type_name
+    assert_equal "{ \"@Version\":\"1.0.0\" }", orin3_module.option
   end
 end
