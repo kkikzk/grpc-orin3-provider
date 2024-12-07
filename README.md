@@ -57,9 +57,7 @@ gem 'grpc-orin3-provider'
      puts "Root.created_datetime: #{root.created_datetime.getlocal}"
      puts "Root.orin3_object_type: #{root.orin3_object_type}"
      puts "Root.id: #{root.id}"
-   rescue ORiN3::MessageClientError => e
-     abort "ERROR: #{e.message}"
-   end
+    end
    ```
 
 ## About ORiN3
