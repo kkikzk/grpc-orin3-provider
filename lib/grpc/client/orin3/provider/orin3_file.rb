@@ -24,7 +24,45 @@ module Grpc
             super(channel, internal_id)
           end
 
-          def seek(offset, origin)
+          def read(buffer_size = 1048576)
+            begin
+              file = O3::FileService::Stub.new(nil, :this_channel_is_insecure, channel_override: @channel)
+              request = O3::ReadFileRequest.new(common: O3P::CommonRequest.new, id: @internal_id, buffer_size: buffer_size)
+              responses = file.read(request)
+              responses.each do |response|
+                if response.common.result_code != :SUCCEEDED
+                  raise MessageClientError.new(response.common.result_code, response.common.detail)
+                end
+                yield response.buffer if block_given?
+              end
+            rescue MessageClientError
+              raise
+            rescue StandardError => e
+              raise MessageClientError.new(e)
+            end  
+          end
+
+          def write(buffer)
+            begin
+              file = O3::FileService::Stub.new(nil, :this_channel_is_insecure, channel_override: @channel)
+              request = O3::WriteFileRequest.new(common: O3P::CommonRequest.new, id: @internal_id, buffer: buffer, total_length: buffer.length)
+              response = file.write(
+                Enumerator.new do |yielder|
+                  yielder << request
+                end
+              )
+
+              if response.common.result_code != :SUCCEEDED
+                raise MessageClientError.new(response.common.result_code, response.common.detail)
+              end
+            rescue MessageClientError
+              raise
+            rescue StandardError => e
+              raise MessageClientError.new(e)
+            end
+          end
+
+          def seek(offset, origin = :BEGIN)
             begin
               file = O3::FileService::Stub.new(nil, :this_channel_is_insecure, channel_override: @channel)
               request = O3::SeekFileRequest.new(common: O3P::CommonRequest.new, id: @internal_id, offset: offset, origin: origin)

@@ -34,7 +34,7 @@ module Grpc
             end  
           end
 
-          def create_job(name, type_name, open)
+          def create_job(name, type_name, option)
             begin
               controller = O3::ChildCreatorService::Stub.new(nil, :this_channel_is_insecure, channel_override: @channel)
               request = O3::CreateJobRequest.new(common: O3P::CommonRequest.new, parent_id: @internal_id, name: name, type_name: type_name, option: option)
@@ -50,7 +50,7 @@ module Grpc
             end  
           end
 
-          def create_file(name, type_name, open)
+          def create_file(name, type_name, option)
             begin
               controller = O3::ChildCreatorService::Stub.new(nil, :this_channel_is_insecure, channel_override: @channel)
               request = O3::CreateFileRequest.new(common: O3P::CommonRequest.new, parent_id: @internal_id, name: name, type_name: type_name, option: option)
