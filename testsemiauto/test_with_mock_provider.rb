@@ -201,7 +201,7 @@ class ORiN3ProviderTest < Minitest::Test
     { name: "TAG_TEST_DATA", type: ORiN3BinaryConverter::DataType::Float, value: { common1: 0.0, common: 1.0 } },
     { name: "TAG_TEST_DATA", type: ORiN3BinaryConverter::DataType::Double, value: { min: DOUBLE_MIN, common: 1.0, max: DOUBLE_MAX } },
     { name: "TAG_TEST_DATA", type: ORiN3BinaryConverter::DataType::DateTime, value: { common: Time.utc(1, 1, 1, 0, 0, 0), common2: Time.utc(9999, 12, 31, 23, 59, 59) } },
-    #{ name: "TAG_TEST_DATA", type: ORiN3BinaryConverter::DataType::String, value: { common: "abc𩸽123", nil: nil } }, # stringのnullの扱いに問題あり
+    { name: "TAG_TEST_DATA", type: ORiN3BinaryConverter::DataType::String, value: { common: "abc𩸽123", empty: "" } },
     # Array
     { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::BoolArray, value: { common: [ false, true ] } },
     { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::BoolArray, value: { common: [] } },
@@ -227,8 +227,9 @@ class ORiN3ProviderTest < Minitest::Test
     { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::DoubleArray, value: { common: [] } },
     { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::DateTimeArray, value: { common: [ Time.utc(1, 1, 1, 0, 0, 0), Time.utc(9999, 12, 31, 23, 59, 59) ] } },
     { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::DateTimeArray, value: { common: [] } },
-    #  { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::StringArray, value: { common: [ "abc", "𩸽", nil ] } }, # stringのnullの扱いに問題あり
-    #  { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::StringArray, value: { common: [] } }, # stringのnullの扱いに問題あり
+    { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::StringArray, value: { common: [ "abc", "𩸽" ] } },
+    #{ name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::StringArray, value: { common: [ "abc", "𩸽", nil ] } }, # stringのnullの扱いに問題あり
+    { name: "TAG_TEST_DATA_ARRAY", type: ORiN3BinaryConverter::DataType::StringArray, value: { common: [] } },
     # NullableArray
     { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableBoolArray, value: { common: [ false, nil, true ] } },
     { name: "TAG_TEST_DATA_NULLABLE_ARRAY", type: ORiN3BinaryConverter::DataType::NullableBoolArray, value: { common: [] } },

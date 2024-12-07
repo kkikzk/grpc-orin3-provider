@@ -236,9 +236,16 @@ class ORiN3BinaryConverter
     when ORiN3BinaryConverter::DataType::StringArray
       length = binary_data[1..4].unpack('L').first
       result = Array.new(length, nil)
+      index = 5
       length.times do |i|
-        string_length = binary_data[5 + i * 4, 4].unpack('L').first
-        result[i] = binary_data[9 + i * 4, string_length].force_encoding('UTF-8')
+        if binary_data[index]
+          string_length = binary_data[index + 1, 4].unpack('L').first
+          result[i] = binary_data[index + 5, string_length].force_encoding('UTF-8')
+          index += string_length + 5
+        else
+          result[i] = nil
+          index += 5
+        end
       end
       return result
     when ORiN3BinaryConverter::DataType::DateTimeArray
